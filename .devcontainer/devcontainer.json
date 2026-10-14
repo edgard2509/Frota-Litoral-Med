@@ -7,4 +7,5 @@
   "portsAttributes": {
     "8000": { "label": "Frota Litoral Med", "onAutoForward": "openBrowser", "visibility": "public" }
   }
+  "portsAttributes": {"8000": {"label": "Frota Litoral Med", "onAutoForward": "openBrowser"}}
 }

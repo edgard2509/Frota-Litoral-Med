@@ -1,8 +1,30 @@
+from flask import Flask, jsonify, render_template
+
+import data
 from flask import Flask, render_template
 
 app = Flask(__name__)
 
 
+@app.template_filter("brl")
+def brl(value):
+    return "R$ " + f"{value:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+
+
+@app.template_filter("num")
+def num(value):
+    return f"{value:,}".replace(",", ".")
+
+
+@app.route("/")
+def home():
+    return render_template(
+        "index.html",
+        kpis=data.kpis(),
+        veiculos=data.VEICULOS,
+        movimentacoes=data.MOVIMENTACOES,
+        manutencoes=data.MANUTENCOES,
+    )
 @app.route("/")
 def home():
     return render_template("index.html")
@@ -32,6 +54,7 @@ def index():
 
 @app.route("/health")
 def health():
+    return jsonify(status="ok")
     return {"status": "ok"}
 
 
