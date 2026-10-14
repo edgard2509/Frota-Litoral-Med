@@ -21,7 +21,7 @@
             </svg>
           </span>
           <span class="brand-copy">
-            <span class="brand-name">litoral<span>med</span></span>
+            <span class="brand-name">Litoral <span>Med</span></span>
             <span class="brand-anniversary"><strong>20</strong> anos <i></i> desde 2004</span>
           </span>
         </a>
@@ -143,13 +143,13 @@
               </button>
             </div>
             <div class="table-toolbar">
-              <div class="result-count"><strong>12 usuários</strong><span> · Lista de acessos</span></div>
+              <div class="result-count"><strong id="user-count">13 usuários</strong><span id="user-count-detail"> · Lista de acessos</span></div>
               <label class="search-box">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.5 4.5"/></svg>
                 <input type="search" id="user-search" placeholder="Buscar usuário..." aria-label="Buscar usuário">
                 <kbd>⌘ K</kbd>
               </label>
-              <button class="filter-button" type="button" id="filter-button">
+              <button class="filter-button" type="button" id="filter-button" aria-pressed="false">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M7 12h10m-7 5h4"/></svg>
                 Filtrar
               </button>
@@ -195,18 +195,72 @@
                     <td><span class="status-badge status-inactive"><i></i> Inativo</span></td>
                     <td><button class="row-menu" type="button" aria-label="Ações para Consulta e auditoria">•••</button></td>
                   </tr>
+                  <tr data-search="atendimento veicular atendimento ambulâncias">
+                    <td><div class="user-cell"><span class="avatar avatar-blue">AV</span><span><strong>Atendimento veicular</strong><small>atendimento.veicular@litoralmed.com.br</small></span></div></td>
+                    <td><span class="role-badge role-operator">Operador</span></td>
+                    <td><span class="last-seen">12 out. 2026, 10:05</span></td>
+                    <td><span class="status-badge"><i></i> Ativo</span></td>
+                    <td><button class="row-menu" type="button" aria-label="Ações para Atendimento veicular">•••</button></td>
+                  </tr>
+                  <tr data-search="supervisão regional supervisor regional">
+                    <td><div class="user-cell"><span class="avatar avatar-teal">SR</span><span><strong>Supervisão regional</strong><small>supervisao.regional@litoralmed.com.br</small></span></div></td>
+                    <td><span class="role-badge role-manager">Gestor de frota</span></td>
+                    <td><span class="last-seen">11 out. 2026, 17:26</span></td>
+                    <td><span class="status-badge"><i></i> Ativo</span></td>
+                    <td><button class="row-menu" type="button" aria-label="Ações para Supervisão regional">•••</button></td>
+                  </tr>
+                  <tr data-search="operações baixada operação">
+                    <td><div class="user-cell"><span class="avatar avatar-violet">OB</span><span><strong>Operações Baixada</strong><small>operacoes.baixada@litoralmed.com.br</small></span></div></td>
+                    <td><span class="role-badge role-operator">Operador</span></td>
+                    <td><span class="last-seen">11 out. 2026, 16:12</span></td>
+                    <td><span class="status-badge"><i></i> Ativo</span></td>
+                    <td><button class="row-menu" type="button" aria-label="Ações para Operações Baixada">•••</button></td>
+                  </tr>
+                  <tr data-search="coordenação são sebastião litoral">
+                    <td><div class="user-cell"><span class="avatar avatar-navy">SS</span><span><strong>Coordenação São Sebastião</strong><small>coordenacao.saosebastiao@litoralmed.com.br</small></span></div></td>
+                    <td><span class="role-badge role-manager">Gestor de frota</span></td>
+                    <td><span class="last-seen">10 out. 2026, 15:48</span></td>
+                    <td><span class="status-badge"><i></i> Ativo</span></td>
+                    <td><button class="row-menu" type="button" aria-label="Ações para Coordenação São Sebastião">•••</button></td>
+                  </tr>
+                  <tr data-search="logística hospitalar logística">
+                    <td><div class="user-cell"><span class="avatar avatar-slate">LH</span><span><strong>Logística hospitalar</strong><small>logistica.hospitalar@litoralmed.com.br</small></span></div></td>
+                    <td><span class="role-badge role-operator">Operador</span></td>
+                    <td><span class="last-seen">10 out. 2026, 14:31</span></td>
+                    <td><span class="status-badge"><i></i> Ativo</span></td>
+                    <td><button class="row-menu" type="button" aria-label="Ações para Logística hospitalar">•••</button></td>
+                  </tr>
+                  <tr data-search="financeiro e contratos financeiro contratos">
+                    <td><div class="user-cell"><span class="avatar avatar-teal">FC</span><span><strong>Financeiro e contratos</strong><small>financeiro.contratos@litoralmed.com.br</small></span></div></td>
+                    <td><span class="role-badge role-viewer">Somente leitura</span></td>
+                    <td><span class="last-seen">09 out. 2026, 12:07</span></td>
+                    <td><span class="status-badge"><i></i> Ativo</span></td>
+                    <td><button class="row-menu" type="button" aria-label="Ações para Financeiro e contratos">•••</button></td>
+                  </tr>
+                  <tr data-search="planejamento e auditoria auditoria">
+                    <td><div class="user-cell"><span class="avatar avatar-violet">PA</span><span><strong>Planejamento e auditoria</strong><small>planejamento.auditoria@litoralmed.com.br</small></span></div></td>
+                    <td><span class="role-badge role-viewer">Somente leitura</span></td>
+                    <td><span class="last-seen">08 out. 2026, 09:54</span></td>
+                    <td><span class="status-badge status-inactive"><i></i> Inativo</span></td>
+                    <td><button class="row-menu" type="button" aria-label="Ações para Planejamento e auditoria">•••</button></td>
+                  </tr>
+                  <tr data-search="consulta operacional consulta">
+                    <td><div class="user-cell"><span class="avatar avatar-blue">CO</span><span><strong>Consulta operacional</strong><small>consulta.operacional@litoralmed.com.br</small></span></div></td>
+                    <td><span class="role-badge role-viewer">Somente leitura</span></td>
+                    <td><span class="last-seen">07 out. 2026, 16:33</span></td>
+                    <td><span class="status-badge"><i></i> Ativo</span></td>
+                    <td><button class="row-menu" type="button" aria-label="Ações para Consulta operacional">•••</button></td>
+                  </tr>
                 </tbody>
               </table>
               <div class="empty-state" id="empty-state" hidden>Nenhum usuário encontrado para esta busca.</div>
             </div>
             <div class="table-footer">
-              <span>Exibindo <strong>1–5</strong> de <strong>12 usuários</strong></span>
-              <div class="pagination">
-                <button type="button" aria-label="Página anterior" disabled>‹</button>
-                <button type="button" class="current-page" aria-current="page">1</button>
-                <button type="button">2</button>
-                <button type="button">3</button>
-                <button type="button" aria-label="Próxima página">›</button>
+              <span>Exibindo <strong id="visible-range">1–5</strong> de <strong id="total-count">13 usuários</strong></span>
+              <div class="pagination" id="user-pagination" aria-label="Paginação de usuários">
+                <button type="button" data-page-action="previous" aria-label="Página anterior" disabled>‹</button>
+                <span id="page-numbers"></span>
+                <button type="button" data-page-action="next" aria-label="Próxima página">›</button>
               </div>
             </div>
           </section>

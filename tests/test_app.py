@@ -22,6 +22,9 @@ class DashboardTests(unittest.TestCase):
         self.assertIn("Visão geral", page)
         self.assertIn("Perfis demonstrativos", page)
         self.assertIn('id="user-search"', page)
+        self.assertIn('<span class="brand-name">Litoral <span>Med</span></span>', page)
+        self.assertIn("<strong id=\"total-count\">13 usuários</strong>", page)
+        self.assertEqual(page.count("<tr data-search="), 13)
 
     def test_dashboard_assets_are_served_locally(self):
         for asset in ("styles.css", "app.js"):
