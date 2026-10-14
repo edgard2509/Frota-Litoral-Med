@@ -27,3 +27,29 @@ th{background:var(--light);color:var(--navy)}
 .bar{height:14px;background:#dbe8ec;border-radius:1rem;overflow:hidden}.bar i{display:block;height:100%;background:var(--teal)}
 footer{text-align:center;padding:1.5rem;background:var(--navy);color:#fff;font-size:.9rem}
 @media(max-width:700px){.hero{flex-direction:column;text-align:center}nav a{margin:0 .8rem 0 0}}
+:root { --navy: #0b2545; --navy-2: #13315c; --gold: #d9a21b; --bg: #f3f5f9; --text: #1b2a41; }
+* { box-sizing: border-box; }
+body { margin: 0; display: flex; min-height: 100vh; font-family: system-ui, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); }
+.sidebar { width: 260px; background: var(--navy); color: #fff; padding: 24px 0; flex-shrink: 0; }
+.brand { display: flex; align-items: center; gap: 12px; padding: 0 24px 24px; border-bottom: 1px solid rgba(255,255,255,.12); }
+.brand-mark { width: 44px; height: 44px; border-radius: 50%; background: var(--gold); display: grid; place-items: center; }
+.brand-mark span { width: 20px; height: 20px; border-radius: 50%; border: 4px solid var(--navy); }
+.brand-name { font-size: 1.15rem; font-weight: 700; }
+.brand-years { color: var(--gold); font-size: .85rem; }
+.brand-years strong { font-size: 1.2rem; }
+nav { display: flex; flex-direction: column; padding-top: 16px; }
+nav a { color: #cfd8e8; text-decoration: none; padding: 12px 24px; border-left: 4px solid transparent; }
+nav a:hover { background: var(--navy-2); color: #fff; }
+nav a.active { background: var(--navy-2); color: #fff; border-left-color: var(--gold); }
+.content { flex: 1; padding: 32px; min-width: 0; }
+.breadcrumb { font-size: .85rem; color: #6b7a90; }
+h1 { margin: 6px 0; color: var(--navy); }
+.page-head p { margin: 0 0 24px; color: #5a6a80; }
+.card { background: #fff; border-radius: 8px; border-top: 4px solid var(--gold); box-shadow: 0 1px 4px rgba(11,37,69,.1); overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 14px 18px; border-bottom: 1px solid #e6eaf1; }
+th { background: #f8f9fc; font-size: .8rem; text-transform: uppercase; color: #6b7a90; }
+.badge { padding: 3px 10px; border-radius: 12px; font-size: .8rem; }
+.badge.ok { background: #e1f5e8; color: #1c7a3d; }
+.badge.off { background: #eceff4; color: #6b7a90; }
+@media (max-width: 720px) { body { flex-direction: column; } .sidebar { width: 100%; } nav { flex-direction: row; flex-wrap: wrap; } .content { padding: 16px; } }
