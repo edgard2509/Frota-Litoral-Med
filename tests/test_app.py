@@ -18,10 +18,15 @@ class DashboardTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         page = response.get_data(as_text=True)
         self.assertIn('lang="pt-BR"', page)
+        self.assertIn('class="brand-name">Litoral <span>Med</span>', page)
+        self.assertIn('<strong>20</strong> anos', page)
         self.assertIn("Acessos autorizados", page)
         self.assertIn("Visão geral", page)
         self.assertIn("Perfis demonstrativos", page)
         self.assertIn('id="user-search"', page)
+        self.assertIn('id="user-count">5 usuários', page)
+        self.assertIn('id="visible-user-count">5</strong>', page)
+        self.assertNotIn("12 usuários", page)
 
     def test_dashboard_assets_are_served_locally(self):
         for asset in ("styles.css", "app.js"):

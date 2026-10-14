@@ -18,9 +18,30 @@ const breadcrumb = document.querySelector("#breadcrumb-current");
 const search = document.querySelector("#user-search");
 const rows = [...document.querySelectorAll("#user-rows tr")];
 const emptyState = document.querySelector("#empty-state");
+const userCount = document.querySelector("#user-count");
+const visibleUserCount = document.querySelector("#visible-user-count");
+const totalUserCount = document.querySelector("#total-user-count");
+const filterButton = document.querySelector("#filter-button");
 const sidebar = document.querySelector("#sidebar");
 const menuButton = document.querySelector("#mobile-menu");
 const scrim = document.querySelector("#sidebar-scrim");
+let activeUsersOnly = false;
+
+userCount.textContent = `${rows.length} usuários`;
+totalUserCount.textContent = rows.length;
+
+function renderUsers() {
+  const query = search.value.trim().toLocaleLowerCase("pt-BR");
+  let visible = 0;
+  rows.forEach((row) => {
+    const matchesQuery = row.dataset.search.includes(query);
+    const isActive = !row.querySelector(".status-inactive");
+    row.hidden = !matchesQuery || (activeUsersOnly && !isActive);
+    if (!row.hidden) visible += 1;
+  });
+  visibleUserCount.textContent = visible;
+  emptyState.hidden = visible !== 0;
+}
 
 function showPage(pageName) {
   const page = pages[pageName] || pages.usuarios;
@@ -50,16 +71,7 @@ document.querySelectorAll("[data-page], .brand").forEach((link) => {
   });
 });
 
-search.addEventListener("input", () => {
-  const query = search.value.trim().toLocaleLowerCase("pt-BR");
-  let visible = 0;
-  rows.forEach((row) => {
-    const matches = row.dataset.search.includes(query);
-    row.hidden = !matches;
-    if (matches) visible += 1;
-  });
-  emptyState.hidden = visible !== 0;
-});
+search.addEventListener("input", renderUsers);
 
 menuButton.addEventListener("click", () => {
   const open = sidebar.classList.toggle("sidebar-open");
@@ -75,14 +87,10 @@ document.querySelector("#add-user").addEventListener("click", () => {
   window.alert("A inclusão de usuários deve ser realizada pela administração do sistema.");
 });
 
-document.querySelector("#filter-button").addEventListener("click", () => {
-  const inactive = rows.find((row) => row.querySelector(".status-inactive"));
-  if (!inactive) return;
-  const showOnlyActive = !inactive.hidden;
-  rows.forEach((row) => {
-    row.hidden = showOnlyActive && row === inactive;
-  });
-  emptyState.hidden = true;
+filterButton.addEventListener("click", () => {
+  activeUsersOnly = !activeUsersOnly;
+  filterButton.setAttribute("aria-pressed", String(activeUsersOnly));
+  renderUsers();
 });
 
 document.addEventListener("keydown", (event) => {
