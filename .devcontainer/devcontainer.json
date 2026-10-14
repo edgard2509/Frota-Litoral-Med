@@ -1,0 +1,10 @@
+{
+  "name": "Frota Litoral Med",
+  "image": "mcr.microsoft.com/devcontainers/python:3.12",
+  "postCreateCommand": "pip install -r requirements.txt",
+  "postAttachCommand": "python app.py",
+  "forwardPorts": [8000],
+  "portsAttributes": {
+    "8000": { "label": "Frota Litoral Med", "onAutoForward": "openBrowser" }
+  }
+}
