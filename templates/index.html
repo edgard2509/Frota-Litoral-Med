@@ -9,6 +9,86 @@
     header{background:#0a6c8f;color:#fff;padding:2rem}
     main{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));padding:2rem}
     section{background:#fff;border-radius:8px;padding:1rem;box-shadow:0 1px 4px #0002}
+  <meta name="theme-color" content="#075985">
+  <title>Frota Litoral Med | Gestão de frota</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: Arial, Helvetica, sans-serif;
+      color: #163047;
+      background: #f3f7fa;
+    }
+
+    * { box-sizing: border-box; }
+
+    body { margin: 0; }
+
+    header {
+      background: #075985;
+      color: #fff;
+      padding: 1.25rem max(1.5rem, calc((100% - 1080px) / 2));
+    }
+
+    header strong { font-size: 1.2rem; }
+
+    main {
+      width: min(1080px, calc(100% - 3rem));
+      margin: 4rem auto;
+    }
+
+    .destaque {
+      padding: 2.5rem;
+      border-radius: 16px;
+      background: #fff;
+      box-shadow: 0 8px 28px rgb(22 48 71 / 8%);
+    }
+
+    .etiqueta {
+      color: #087e8b;
+      font-size: .8rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    h1 { margin: .6rem 0; font-size: clamp(2rem, 5vw, 3rem); }
+
+    .introducao {
+      max-width: 650px;
+      color: #526779;
+      font-size: 1.1rem;
+      line-height: 1.6;
+    }
+
+    h2 { margin-top: 2.5rem; }
+
+    .recursos {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .recurso {
+      padding: 1.25rem;
+      border: 1px solid #dce7ee;
+      border-radius: 12px;
+      background: #fff;
+    }
+
+    .recurso h3 { margin: 0 0 .5rem; }
+    .recurso p { margin: 0; color: #526779; line-height: 1.5; }
+
+    footer {
+      margin-top: 2rem;
+      color: #647989;
+      font-size: .9rem;
+    }
+
+    @media (max-width: 600px) {
+      main { margin: 2rem auto; }
+      .destaque { padding: 1.5rem; }
+    }
   </style>
 </head>
 <body>
@@ -22,4 +102,337 @@
     <section><h2>Manutenções</h2><p>Em breve: controle de manutenções preventivas e corretivas.</p></section>
   </main>
 </body>
+    <strong>Frota Litoral Med</strong>
+  </header>
+  <main>
+    <section class="destaque" aria-labelledby="titulo-principal">
+      <span class="etiqueta">Gestão de frota</span>
+      <h1 id="titulo-principal">Cuidar da frota é cuidar de quem chega até você.</h1>
+      <p class="introducao">
+        Acompanhe os veículos, organize as movimentações e mantenha as manutenções
+        em dia. Um espaço para apoiar a operação da Litoral Med com mais controle
+        e tranquilidade.
+      </p>
+      <h2>O que você pode acompanhar</h2>
+      <div class="recursos">
+        <article class="recurso">
+          <h3>Veículos</h3>
+          <p>Consulte a frota e acompanhe a situação de cada veículo.</p>
+        </article>
+        <article class="recurso">
+          <h3>Movimentações</h3>
+          <p>Organize saídas, retornos e o histórico de uso dos veículos.</p>
+        </article>
+        <article class="recurso">
+          <h3>Manutenções</h3>
+          <p>Registre serviços e acompanhe os próximos cuidados necessários.</p>
+        </article>
+      </div>
+    </section>
+    <footer>Gestão da frota da Litoral Med</footer>
+  </main>
+</body>
+  <title>Usuários · Litoral Med — Gestão de Frota</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true"><span></span></div>
+      <div>
+        <div class="brand-name">Litoral Med</div>
+        <div class="brand-years"><strong>20</strong> anos</div>
+      </div>
+    </div>
+    <nav>
+      {% for slug, label in menu %}
+      <a href="#{{ slug }}" class="{{ 'active' if slug == ativo }}">{{ label }}</a>
+      {% endfor %}
+    </nav>
+  </aside>
+  <main class="content">
+    <header class="page-head">
+      <div class="breadcrumb">Início / Usuários</div>
+      <h1>Usuários</h1>
+      <p>Usuários autorizados a acessar o sistema de gestão de frota.</p>
+    </header>
+    <section class="card" id="usuarios">
+      <table>
+        <thead>
+          <tr><th>Nome</th><th>E-mail</th><th>Perfil</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          {% for u in usuarios %}
+          <tr>
+            <td>{{ u.nome }}</td>
+            <td>{{ u.email }}</td>
+            <td>{{ u.perfil }}</td>
+            <td><span class="badge {{ 'ok' if u.status == 'Ativo' else 'off' }}">{{ u.status }}</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+  </main>
+</body>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#102c4a">
+    <meta name="description" content="Portal interno de gestão da frota Litoral Med.">
+    <title>Frota Litoral Med | Gestão de frota</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar">
+        <a class="brand" href="#visao-geral" aria-label="Litoral Med, visão geral">
+          <span class="brand-symbol" aria-hidden="true">
+            <svg viewBox="0 0 44 44" fill="none">
+              <path d="M5 24.5c5.6 0 5.6-6 11.2-6s5.6 6 11.2 6 5.6-6 11.2-6" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+              <path d="M5 32c5.6 0 5.6-6 11.2-6s5.6 6 11.2 6 5.6-6 11.2-6" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" opacity=".55"/>
+              <circle cx="22" cy="11" r="4" fill="#e5b958"/>
+            </svg>
+          </span>
+          <span class="brand-copy">
+            <span class="brand-name">Litoral <span>Med</span></span>
+            <span class="brand-anniversary"><strong>20</strong> anos <i></i> desde 2004</span>
+          </span>
+        </a>
+
+        <div class="workspace-label">GESTÃO INTERNA</div>
+        <nav class="primary-nav" aria-label="Navegação principal">
+          <a class="nav-link" href="#visao-geral" data-page="visao-geral">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="4" rx="1.5"/><rect x="13.5" y="10.5" width="7" height="10" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/></svg>
+            <span>Visão geral</span>
+          </a>
+          <a class="nav-link" href="#veiculos" data-page="veiculos">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 11 1.6-4.3A2.5 2.5 0 0 1 8 5h8a2.5 2.5 0 0 1 2.4 1.7L20 11"/><path d="M3.5 11h17v7a1.5 1.5 0 0 1-1.5 1.5h-14A1.5 1.5 0 0 1 3.5 18z"/><path d="M7 15h.01M17 15h.01M4 11l-1 2m17-2 1 2"/></svg>
+            <span>Veículos</span><span class="nav-count">48</span>
+          </a>
+          <a class="nav-link" href="#movimentacoes" data-page="movimentacoes">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h13m0 0-3-3m3 3-3 3M20 17H7m0 0 3-3m-3 3 3 3"/></svg>
+            <span>Movimentações</span>
+          </a>
+          <a class="nav-link" href="#manutencoes" data-page="manutencoes">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.2 6.2 3.6 3.6m-8.9 8.9-4.6 1.1 1.1-4.6L16.5 4.1a2.5 2.5 0 0 1 3.5 3.5z"/><path d="m8.4 15.6 3.5-3.5"/></svg>
+            <span>Manutenções</span><span class="nav-dot"></span>
+          </a>
+          <a class="nav-link" href="#licenciamentos" data-page="licenciamentos">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3.5h7l4.5 4.5v12A1.5 1.5 0 0 1 17 21.5H7A1.5 1.5 0 0 1 5.5 20V5A1.5 1.5 0 0 1 7 3.5Z"/><path d="M14 4v5h5M8.5 14h7m-7 3.5h7"/></svg>
+            <span>Licenciamentos</span>
+          </a>
+          <a class="nav-link" href="#seguros" data-page="seguros">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s8-4 8-10V5l-8-3-8 3v6c0 6 8 10 8 10Z"/><path d="m9 11.5 2 2 4-4"/></svg>
+            <span>Seguros</span>
+          </a>
+          <a class="nav-link" href="#sinistros" data-page="sinistros">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2.8 19a1.4 1.4 0 0 0 1.2 2h16a1.4 1.4 0 0 0 1.2-2L12 3Z"/><path d="M12 9v4m0 3h.01"/></svg>
+            <span>Sinistros</span>
+          </a>
+          <div class="nav-divider"></div>
+          <a class="nav-link" href="#usuarios" data-page="usuarios">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 20v-1.5a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4V20"/><circle cx="9.5" cy="7" r="4"/><path d="M17 11a4 4 0 0 0 0-8m4 17v-1.5a4 4 0 0 0-3-3.9"/></svg>
+            <span>Usuários</span>
+          </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+          <div class="sidebar-help">
+            <span class="help-icon" aria-hidden="true">?</span>
+            <span><strong>Precisa de ajuda?</strong><small>Fale com a administração</small></span>
+            <span class="help-arrow" aria-hidden="true">↗</span>
+          </div>
+          <div class="sidebar-account">
+            <span class="avatar avatar-gold">LM</span>
+            <span class="account-copy"><strong>Administração</strong><small>Gestão de frota</small></span>
+            <button class="account-menu" type="button" aria-label="Opções da conta">•••</button>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main-panel">
+        <header class="topbar">
+          <button class="mobile-menu" id="mobile-menu" type="button" aria-label="Abrir menu" aria-expanded="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+          </button>
+          <div class="breadcrumbs"><span>Início</span><span class="crumb-separator">/</span><strong id="breadcrumb-current">Usuários</strong></div>
+          <div class="topbar-actions">
+            <span class="today-label"><span class="online-indicator"></span> Sistema operacional</span>
+            <button class="icon-button notification-button" type="button" aria-label="Notificações">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9m-8 12h4"/></svg>
+              <span class="notification-dot"></span>
+            </button>
+            <span class="topbar-avatar">LM</span>
+          </div>
+        </header>
+
+        <div class="content">
+          <section class="page-heading">
+            <div>
+              <div class="eyebrow"><span class="eyebrow-line"></span> PORTAL DE GESTÃO</div>
+              <h1 id="page-title">Usuários</h1>
+              <p id="page-description">Gerencie os acessos e as permissões do sistema.</p>
+            </div>
+            <button class="date-selector" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M7.5 3v4m9-4v4m-13 3h17"/></svg>
+              <span>Quarta-feira, 14 de outubro de 2026</span>
+              <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>
+            </button>
+          </section>
+
+          <section class="stats-grid" aria-label="Resumo da frota">
+            <article class="stat-card">
+              <div class="stat-top"><span class="stat-label">Veículos na frota</span><span class="stat-icon icon-blue"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 11 1.6-4.3A2.5 2.5 0 0 1 8 5h8a2.5 2.5 0 0 1 2.4 1.7L20 11"/><path d="M3.5 11h17v7a1.5 1.5 0 0 1-1.5 1.5h-14A1.5 1.5 0 0 1 3.5 18z"/><path d="M7 15h.01M17 15h.01"/></svg></span></div>
+              <div class="stat-value">48 <span class="stat-trend">+2 este mês</span></div>
+              <div class="stat-foot">Veículos cadastrados</div>
+            </article>
+            <article class="stat-card">
+              <div class="stat-top"><span class="stat-label">Em operação</span><span class="stat-icon icon-green"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7 10 17l-5-5"/><circle cx="12" cy="12" r="9"/></svg></span></div>
+              <div class="stat-value">36 <span class="stat-percent">75%</span></div>
+              <div class="stat-foot">Disponíveis para uso</div>
+            </article>
+            <article class="stat-card">
+              <div class="stat-top"><span class="stat-label">Em manutenção</span><span class="stat-icon icon-amber"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.2 6.2 3.6 3.6m-8.9 8.9-4.6 1.1 1.1-4.6L16.5 4.1a2.5 2.5 0 0 1 3.5 3.5z"/></svg></span></div>
+              <div class="stat-value">07 <span class="stat-trend stat-trend-warm">3 preventivas</span></div>
+              <div class="stat-foot">Acompanhamento em andamento</div>
+            </article>
+            <article class="stat-card">
+              <div class="stat-top"><span class="stat-label">Alertas importantes</span><span class="stat-icon icon-red"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2.8 19a1.4 1.4 0 0 0 1.2 2h16a1.4 1.4 0 0 0 1.2-2L12 3Z"/><path d="M12 9v4m0 3h.01"/></svg></span></div>
+              <div class="stat-value">05 <span class="stat-trend stat-trend-alert">Requer atenção</span></div>
+              <div class="stat-foot">Documentos e prazos próximos</div>
+            </article>
+          </section>
+
+          <section class="panel users-panel" id="users-panel">
+            <div class="panel-heading">
+              <div>
+                <div class="section-kicker">ADMINISTRAÇÃO</div>
+                <h2>Acessos autorizados</h2>
+                <p>Perfis demonstrativos para visualização do portal.</p>
+              </div>
+              <button class="primary-button" type="button" id="add-user">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14m-7-7h14"/></svg>
+                Novo usuário
+              </button>
+            </div>
+            <div class="table-toolbar">
+              <div class="result-count"><strong id="user-count">5 usuários</strong><span> · Lista de acessos</span></div>
+              <label class="search-box">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.5 4.5"/></svg>
+                <input type="search" id="user-search" placeholder="Buscar usuário..." aria-label="Buscar usuário">
+                <kbd>⌘ K</kbd>
+              </label>
+              <button class="filter-button" type="button" id="filter-button" aria-pressed="false">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M7 12h10m-7 5h4"/></svg>
+                Filtrar
+              </button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>USUÁRIO</th><th>PERFIL DE ACESSO</th><th>ÚLTIMO ACESSO</th><th>STATUS</th><th><span class="sr-only">Ações</span></th></tr>
+                </thead>
+                <tbody id="user-rows">
+                  <tr data-search="administração de frota admin frota admin.frota@litoralmed.com.br">
+                    <td><div class="user-cell"><span class="avatar avatar-navy">AF</span><span><strong>Administração de frota</strong><small>admin.frota@litoralmed.com.br</small></span></div></td>
+                    <td><span class="role-badge role-admin">Administrador</span></td>
+                    <td><span class="last-seen">Hoje, 09:42</span></td>
+                    <td><span class="status-badge"><i></i> Ativo</span></td>
+                    <td><button class="row-menu" type="button" aria-label="Ações para Administração de frota">•••</button></td>
+                  </tr>
+                  <tr data-search="coordenação operacional coordenador operação coordenacao@litoralmed.com.br">
+                    <td><div class="user-cell"><span class="avatar avatar-blue">CO</span><span><strong>Coordenação operacional</strong><small>coordenacao@litoralmed.com.br</small></span></div></td>
+                    <td><span class="role-badge role-manager">Gestor de frota</span></td>
+                    <td><span class="last-seen">Hoje, 08:17</span></td>
+                    <td><span class="status-badge"><i></i> Ativo</span></td>
+                    <td><button class="row-menu" type="button" aria-label="Ações para Coordenação operacional">•••</button></td>
+                  </tr>
+                  <tr data-search="equipe de manutenção oficina manutencao manutencao@litoralmed.com.br">
+                    <td><div class="user-cell"><span class="avatar avatar-teal">EM</span><span><strong>Equipe de manutenção</strong><small>manutencao@litoralmed.com.br</small></span></div></td>
+                    <td><span class="role-badge role-operator">Operador</span></td>
+                    <td><span class="last-seen">Ontem, 16:35</span></td>
+                    <td><span class="status-badge"><i></i> Ativo</span></td>
+                    <td><button class="row-menu" type="button" aria-label="Ações para Equipe de manutenção">•••</button></td>
+                  </tr>
+                  <tr data-search="logística litoral litoral logistica logistica@litoralmed.com.br">
+                    <td><div class="user-cell"><span class="avatar avatar-violet">LL</span><span><strong>Logística Litoral</strong><small>logistica@litoralmed.com.br</small></span></div></td>
+                    <td><span class="role-badge role-operator">Operador</span></td>
+                    <td><span class="last-seen">Ontem, 14:08</span></td>
+                    <td><span class="status-badge"><i></i> Ativo</span></td>
+                    <td><button class="row-menu" type="button" aria-label="Ações para Logística Litoral">•••</button></td>
+                  </tr>
+                  <tr data-search="consulta e auditoria auditor auditoria auditoria@litoralmed.com.br">
+                    <td><div class="user-cell"><span class="avatar avatar-slate">CA</span><span><strong>Consulta e auditoria</strong><small>auditoria@litoralmed.com.br</small></span></div></td>
+                    <td><span class="role-badge role-viewer">Somente leitura</span></td>
+                    <td><span class="last-seen">12 out. 2026, 11:20</span></td>
+                    <td><span class="status-badge status-inactive"><i></i> Inativo</span></td>
+                    <td><button class="row-menu" type="button" aria-label="Ações para Consulta e auditoria">•••</button></td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="empty-state" id="empty-state" hidden>Nenhum usuário encontrado para esta busca.</div>
+            </div>
+            <div class="table-footer">
+              <span aria-live="polite">Exibindo <strong id="visible-user-count">5</strong> de <strong id="total-user-count">5</strong> usuários demonstrativos</span>
+            </div>
+          </section>
+
+          <section class="dashboard-details" id="dashboard-details" hidden>
+            <article class="panel activity-panel">
+              <div class="detail-heading">
+                <div><div class="section-kicker">ACOMPANHAMENTO</div><h2>Movimentações recentes</h2></div>
+                <a href="#movimentacoes" data-page="movimentacoes">Ver movimentações <span aria-hidden="true">↗</span></a>
+              </div>
+              <div class="activity-list">
+                <div class="activity-item">
+                  <span class="activity-mark activity-mark-blue"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h13m0 0-3-3m3 3-3 3M20 17H7m0 0 3-3m-3 3 3 3"/></svg></span>
+                  <span class="activity-copy"><strong>Veículo disponibilizado</strong><small>Saída registrada para atendimento externo</small></span>
+                  <span class="activity-vehicle">LM-024 <small>Hoje, 09:18</small></span>
+                </div>
+                <div class="activity-item">
+                  <span class="activity-mark activity-mark-gold"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.2 6.2 3.6 3.6m-8.9 8.9-4.6 1.1 1.1-4.6L16.5 4.1a2.5 2.5 0 0 1 3.5 3.5z"/></svg></span>
+                  <span class="activity-copy"><strong>Revisão preventiva agendada</strong><small>Manutenção programada para esta semana</small></span>
+                  <span class="activity-vehicle">LM-011 <small>Hoje, 08:52</small></span>
+                </div>
+                <div class="activity-item">
+                  <span class="activity-mark activity-mark-green"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span>
+                  <span class="activity-copy"><strong>Documento atualizado</strong><small>Licenciamento anual registrado no sistema</small></span>
+                  <span class="activity-vehicle">LM-037 <small>Ontem, 16:40</small></span>
+                </div>
+              </div>
+            </article>
+            <article class="panel deadlines-panel">
+              <div class="detail-heading">
+                <div><div class="section-kicker">PRÓXIMOS PRAZOS</div><h2>Itens para acompanhar</h2></div>
+                <span class="deadline-count">03</span>
+              </div>
+              <div class="deadline-item">
+                <span class="deadline-date"><strong>18</strong><small>OUT</small></span>
+                <span><strong>Licenciamento</strong><small>LM-008 · vence em 4 dias</small></span>
+                <span class="deadline-arrow">›</span>
+              </div>
+              <div class="deadline-item">
+                <span class="deadline-date date-amber"><strong>22</strong><small>OUT</small></span>
+                <span><strong>Renovação de seguro</strong><small>LM-031 · vence em 8 dias</small></span>
+                <span class="deadline-arrow">›</span>
+              </div>
+              <div class="deadline-item">
+                <span class="deadline-date date-blue"><strong>26</strong><small>OUT</small></span>
+                <span><strong>Manutenção preventiva</strong><small>LM-019 · vence em 12 dias</small></span>
+                <span class="deadline-arrow">›</span>
+              </div>
+            </article>
+          </section>
+
+          <footer class="page-footer">
+            <span>© 2026 Litoral Med <span class="footer-separator">·</span> Gestão de frota</span>
+            <span><span class="footer-live"></span> Ambiente interno</span>
+          </footer>
+        </div>
+      </main>
+      <div class="sidebar-scrim" id="sidebar-scrim"></div>
+    </div>
+  </body>
 </html>
