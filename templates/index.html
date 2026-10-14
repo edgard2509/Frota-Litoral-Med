@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Litoral Med · Gestão de Frota</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="#inicio" aria-label="Litoral Med 20 anos">
+    <span class="brand-mark" aria-hidden="true">+</span>
+    <span class="brand-text"><strong>Litoral Med</strong><small>Gestão de Frota</small></span>
+    <span class="badge-20"><b>20</b><small>anos</small></span>
+  </a>
+  <nav>
+    <a href="#veiculos">Veículos</a>
+    <a href="#movimentacoes">Movimentações</a>
+    <a href="#manutencoes">Manutenções</a>
+    <a href="#indicadores">Indicadores</a>
+  </nav>
+</header>
+
+<main>
+<section class="hero" id="inicio">
+  <div>
+    <p class="eyebrow">Litoral Med · 20 anos cuidando de pessoas</p>
+    <h1>Portal de Gestão de Frota</h1>
+    <p>Acompanhe veículos, movimentações e manutenções da frota Litoral Med em um só lugar.</p>
+    <a class="btn" href="#veiculos">Ver frota</a>
+  </div>
+  <div class="hero-20" aria-hidden="true"><span>20</span><small>anos</small></div>
+</section>
+
+<section class="kpis" aria-label="Resumo">
+  <article><span>Veículos na frota</span><strong>{{ kpis.total }}</strong></article>
+  <article><span>Em operação</span><strong>{{ kpis.em_operacao }}</strong></article>
+  <article><span>Em manutenção</span><strong>{{ kpis.em_manutencao }}</strong></article>
+  <article><span>Disponibilidade</span><strong>{{ kpis.disponibilidade }}%</strong></article>
+</section>
+
+<section id="veiculos">
+  <h2>Veículos</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Placa</th><th>Modelo</th><th>Marca</th><th>Ano</th><th>Km</th><th>Status</th></tr></thead>
+    <tbody>{% for v in veiculos %}
+      <tr><td>{{ v.placa }}</td><td>{{ v.modelo }}</td><td>{{ v.marca }}</td><td>{{ v.ano }}</td><td>{{ v.km|num }}</td>
+      <td><span class="tag s-{{ v.status|lower|replace(' ', '-')|replace('ã','a')|replace('ç','c') }}">{{ v.status }}</span></td></tr>
+    {% endfor %}</tbody>
+  </table></div>
+</section>
+
+<section id="movimentacoes">
+  <h2>Movimentações</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Data</th><th>Placa</th><th>Motorista</th><th>Origem</th><th>Destino</th><th>Km</th></tr></thead>
+    <tbody>{% for m in movimentacoes %}
+      <tr><td>{{ m.data }}</td><td>{{ m.placa }}</td><td>{{ m.motorista }}</td><td>{{ m.origem }}</td><td>{{ m.destino }}</td><td>{{ m.km }}</td></tr>
+    {% endfor %}</tbody>
+  </table></div>
+</section>
+
+<section id="manutencoes">
+  <h2>Manutenções</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Placa</th><th>Tipo</th><th>Descrição</th><th>Previsão</th><th>Custo</th><th>Status</th></tr></thead>
+    <tbody>{% for m in manutencoes %}
+      <tr><td>{{ m.placa }}</td><td>{{ m.tipo }}</td><td>{{ m.descricao }}</td><td>{{ m.previsao }}</td><td>{{ m.custo|brl }}</td><td><span class="tag">{{ m.status }}</span></td></tr>
+    {% endfor %}</tbody>
+  </table></div>
+</section>
+
+<section id="indicadores">
+  <h2>Indicadores</h2>
+  <div class="kpis">
+    <article><span>Km rodados (movimentações)</span><strong>{{ kpis.km_mes|num }}</strong></article>
+    <article><span>Manutenções abertas</span><strong>{{ kpis.manutencoes_abertas }}</strong></article>
+    <article><span>Custo de manutenção</span><strong>{{ kpis.custo_manutencao|brl }}</strong></article>
+    <article><span>Veículos disponíveis</span><strong>{{ kpis.disponiveis }}</strong></article>
+  </div>
+  <div class="bar" role="img" aria-label="Disponibilidade da frota {{ kpis.disponibilidade }}%"><i style="width: {{ kpis.disponibilidade }}%"></i></div>
+</section>
+</main>
+
+<footer>© Litoral Med · 20 anos · Portal interno de gestão de frota</footer>
+</body>
+</html>
