@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Usuários — Litoral Med Frota</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<nav class="sidebar">
+  <div class="brand">
+    <strong>Litoral Med</strong><br>
+    <div class="anos"><span>20</span> anos</div>
+  </div>
+  {% for nome, slug in menu %}
+  <a href="#{{ slug }}" class="{{ 'ativo' if slug == ativo }}">{{ nome }}</a>
+  {% endfor %}
+</nav>
+<main id="usuarios">
+  <div class="breadcrumb">Início / Administração / Usuários</div>
+  <h1>Usuários</h1>
+  <div class="card">
+    <h2>Usuários autorizados</h2>
+    <table>
+      <thead><tr><th>Nome</th><th>E-mail</th><th>Perfil</th><th>Status</th></tr></thead>
+      <tbody>
+      {% for u in usuarios %}
+      <tr><td>{{ u.nome }}</td><td>{{ u.email }}</td><td>{{ u.perfil }}</td>
+      <td><span class="tag {{ '' if u.ativo else 'off' }}">{{ 'Ativo' if u.ativo else 'Inativo' }}</span></td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</main>
+</body>
+</html>
