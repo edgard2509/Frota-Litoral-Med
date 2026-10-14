@@ -15,4 +15,10 @@ A aplicação fica disponível em `http://localhost:8000` e escuta em `0.0.0.0:8
 
 O endpoint `GET /health` retorna `{"status":"ok"}` para verificações de disponibilidade.
 
+Para executar os testes:
+
+```bash
+python -m unittest tests.test_app
+```
+
 Os indicadores e perfis de usuário exibidos na interface são demonstrativos; conecte dados reais antes de utilizar o portal em produção.
