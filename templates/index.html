@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Usuários · Litoral Med — Gestão de Frota</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true"><span></span></div>
+      <div>
+        <div class="brand-name">Litoral Med</div>
+        <div class="brand-years"><strong>20</strong> anos</div>
+      </div>
+    </div>
+    <nav>
+      {% for slug, label in menu %}
+      <a href="#{{ slug }}" class="{{ 'active' if slug == ativo }}">{{ label }}</a>
+      {% endfor %}
+    </nav>
+  </aside>
+  <main class="content">
+    <header class="page-head">
+      <div class="breadcrumb">Início / Usuários</div>
+      <h1>Usuários</h1>
+      <p>Usuários autorizados a acessar o sistema de gestão de frota.</p>
+    </header>
+    <section class="card" id="usuarios">
+      <table>
+        <thead>
+          <tr><th>Nome</th><th>E-mail</th><th>Perfil</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          {% for u in usuarios %}
+          <tr>
+            <td>{{ u.nome }}</td>
+            <td>{{ u.email }}</td>
+            <td>{{ u.perfil }}</td>
+            <td><span class="badge {{ 'ok' if u.status == 'Ativo' else 'off' }}">{{ u.status }}</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+  </main>
+</body>
+</html>
