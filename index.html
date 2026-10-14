@@ -1,0 +1,1443 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f6f2">
+  <title>Litoral Med | Gestão de frota</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #252b3c;
+      --muted: #6f778a;
+      --line: #e3e6ed;
+      --paper: #ffffff;
+      --canvas: #f4f5f8;
+      --brand-blue: #29367d;
+      --brand-blue-dark: #202b65;
+      --brand-blue-light: #edf0fa;
+      --amber: #a66a16;
+      --amber-light: #fff3dd;
+      --red: #e21f26;
+      --red-light: #fcebed;
+      --nav: #202b63;
+      --radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--ink);
+      background: var(--canvas);
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-width: 320px; min-height: 100vh; }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    .app { min-height: 100vh; }
+    .sidebar {
+      position: fixed; inset: 0 auto 0 0; z-index: 5; width: 244px;
+      display: flex; flex-direction: column; padding: 26px 16px 18px;
+      background: var(--nav); color: #f5f6fc;
+    }
+    .brand { display: block; padding: 0 0 26px; }
+    .brand-logo-frame { height: 88px; overflow: hidden; border-radius: 4px; background: #fff; }
+    .brand-logo { display: block; width: 100%; height: auto; transform: translateY(-14px); }
+    .brand-caption { margin-top: 5px; color: #c5cbe5; font-size: 10px; }
+    .nav-label { padding: 0 12px 10px; color: #abb5df; font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    .nav-list { display: grid; gap: 5px; }
+    .nav-button { min-height: 42px; display: flex; align-items: center; gap: 12px; padding: 0 12px; border: 0; border-radius: 6px; color: #c5cbe5; background: transparent; text-align: left; font-size: 13px; }
+    .nav-button:hover { background: #303c78; color: white; }
+    .nav-button.active { color: #fff; background: #354486; box-shadow: inset 3px 0 var(--red); }
+    .nav-button svg { width: 17px; height: 17px; flex: 0 0 auto; }
+    .nav-count { min-width: 20px; margin-left: auto; padding: 2px 6px; border-radius: 20px; color: #fff; background: #a34b40; text-align: center; font-size: 10px; }
+    .sidebar-bottom { margin-top: auto; padding: 16px 12px 2px; border-top: 1px solid #3c4779; color: #c5cbe5; font-size: 11px; line-height: 1.6; }
+    .sidebar-bottom strong { color: #fff; font-size: 12px; font-weight: 600; }
+    .main { min-height: 100vh; margin-left: 244px; }
+    .topbar { min-height: 70px; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 0 38px; border-bottom: 1px solid var(--line); background: var(--paper); }
+    .breadcrumb { color: var(--muted); font-size: 12px; }
+    .breadcrumb strong { color: var(--ink); font-weight: 600; }
+    .topbar-right { display: flex; align-items: center; gap: 18px; }
+    .today { color: var(--muted); font-size: 12px; }
+    .user-badge { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; color: var(--brand-blue); background: var(--brand-blue-light); font-size: 11px; font-weight: 700; }
+    .content { max-width: 1440px; margin: 0 auto; padding: 32px 38px 54px; }
+    .page-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 5px; font-family: Manrope, sans-serif; font-size: 25px; line-height: 1.25; font-weight: 800; }
+    .page-subtitle { margin-bottom: 0; color: var(--muted); font-size: 13px; }
+    .button { min-height: 38px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 0 13px; border: 1px solid transparent; border-radius: 6px; font-size: 12px; font-weight: 600; transition: background .15s, border-color .15s; }
+    .button svg { width: 15px; height: 15px; }
+    .button-primary { color: white; background: var(--brand-blue); }
+    .button-primary:hover { background: var(--brand-blue-dark); }
+    .button-secondary { color: var(--ink); border-color: var(--line); background: white; }
+    .button-secondary:hover { border-color: #bdc9bf; background: #fafbf9; }
+    .button-danger { color: var(--red); border-color: #efd6d2; background: white; }
+    .button-danger:hover { border-color: #deb3ad; background: #fff8f7; }
+    .page-actions { display: flex; align-items: center; gap: 8px; }
+    .button-small { min-height: 30px; padding: 0 9px; font-size: 11px; }
+    .metric-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 14px; margin-bottom: 20px; }
+    .metric { min-height: 115px; padding: 17px 18px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); }
+    .metric-top { display: flex; justify-content: space-between; align-items: center; color: var(--muted); font-size: 11px; }
+    .metric-icon { width: 29px; height: 29px; display: grid; place-items: center; border-radius: 7px; color: var(--brand-blue); background: var(--brand-blue-light); }
+    .metric-icon.amber { color: var(--amber); background: var(--amber-light); }
+    .metric-icon.red { color: var(--red); background: var(--red-light); }
+    .metric-icon svg { width: 16px; height: 16px; }
+    .metric-value { margin-top: 8px; font-family: Manrope, sans-serif; font-size: 27px; line-height: 1.1; font-weight: 800; }
+    .metric-note { margin-top: 4px; color: var(--muted); font-size: 10px; }
+    .dashboard-grid { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(280px, .85fr); gap: 16px; align-items: start; }
+    .panel { min-width: 0; margin-bottom: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); }
+    .panel-heading { min-height: 58px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 18px; border-bottom: 1px solid var(--line); }
+    .panel-heading h2 { margin: 0; font-family: Manrope, sans-serif; font-size: 14px; font-weight: 700; }
+    .text-link { padding: 5px 0; border: 0; color: var(--brand-blue); background: transparent; font-size: 11px; font-weight: 600; }
+    .text-link:hover { color: var(--brand-blue-dark); text-decoration: underline; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    th { padding: 11px 16px; color: #819087; background: #fbfcfa; font-size: 9px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; white-space: nowrap; }
+    td { padding: 12px 16px; border-top: 1px solid #eef0ed; color: #46564d; font-size: 11px; white-space: nowrap; }
+    tbody tr:first-child td { border-top: 0; }
+    .table-primary { color: var(--ink); font-weight: 600; }
+    .table-secondary { margin-top: 3px; color: var(--muted); font-size: 10px; }
+    .vehicle-specs { min-width: 230px; white-space: normal; line-height: 1.5; }
+    .plate { display: inline-block; padding: 4px 7px; border: 1px solid #e4e9e3; border-radius: 4px; color: #41534a; background: #fafbf9; font-size: 10px; font-weight: 600; }
+    .status { display: inline-flex; align-items: center; gap: 5px; padding: 4px 7px; border-radius: 20px; font-size: 10px; font-weight: 600; }
+    .status::before { width: 5px; height: 5px; border-radius: 50%; background: currentColor; content: ''; }
+    .status-ok { color: #28714f; background: #eaf4ed; }
+    .status-warn { color: #996219; background: #fff3df; }
+    .status-danger { color: #ae4841; background: #faeae7; }
+    .status-neutral { color: #68776e; background: #eef1ed; }
+    .alerts-list { padding: 2px 17px; }
+    .alert-row { display: flex; gap: 11px; padding: 14px 0; border-bottom: 1px solid #eef0ed; }
+    .alert-row:last-child { border-bottom: 0; }
+    .alert-mark { width: 7px; height: 7px; flex: 0 0 auto; margin-top: 5px; border-radius: 50%; background: var(--amber); }
+    .alert-mark.urgent { background: var(--red); }
+    .alert-title { color: var(--ink); font-size: 11px; font-weight: 600; line-height: 1.4; }
+    .alert-detail { margin-top: 3px; color: var(--muted); font-size: 10px; line-height: 1.5; }
+    .alert-empty { padding: 22px 2px; color: var(--muted); font-size: 11px; line-height: 1.6; }
+    .unit-strip { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 18px; }
+    .unit-pill { display: flex; align-items: center; gap: 7px; padding: 7px 9px; border: 1px solid var(--line); border-radius: 5px; color: #47574d; font-size: 10px; }
+    .unit-pill strong { color: var(--brand-blue); font-size: 11px; }
+    .search-field { position: relative; width: min(100%, 260px); }
+    .search-field svg { position: absolute; top: 10px; left: 10px; width: 15px; height: 15px; color: #8a978e; }
+    .search-field input { width: 100%; height: 36px; padding: 0 10px 0 32px; border: 1px solid var(--line); border-radius: 6px; outline: none; background: white; font-size: 11px; }
+    .search-field input:focus, .field input:focus, .field select:focus, .field textarea:focus { border-color: #6aaa87; box-shadow: 0 0 0 3px #e7f3eb; }
+    .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0 0 14px; }
+    .toolbar select { height: 36px; padding: 0 27px 0 10px; border: 1px solid var(--line); border-radius: 6px; color: #4f5d54; background: white; font-size: 11px; }
+    .toolbar-spacer { flex: 1; }
+    .section-note { margin: -9px 0 15px; color: var(--muted); font-size: 11px; }
+    .empty-state { padding: 28px 16px; color: var(--muted); text-align: center; font-size: 11px; }
+    .hidden { display: none !important; }
+    dialog { width: min(480px, calc(100% - 28px)); max-height: min(90vh, 780px); padding: 0; overflow: auto; border: 1px solid var(--line); border-radius: 10px; color: var(--ink); background: white; box-shadow: 0 24px 80px #1c342b33; }
+    dialog::backdrop { background: #14251fcc; backdrop-filter: blur(2px); }
+    .dialog-head { display: flex; align-items: start; justify-content: space-between; padding: 21px 22px 16px; border-bottom: 1px solid var(--line); }
+    .dialog-head h2 { margin: 0; font-family: Manrope, sans-serif; font-size: 17px; font-weight: 800; }
+    .dialog-head p { margin: 5px 0 0; color: var(--muted); font-size: 11px; }
+    .icon-button { width: 30px; height: 30px; display: grid; place-items: center; border: 0; border-radius: 5px; color: var(--muted); background: transparent; }
+    .icon-button:hover { color: var(--ink); background: #f1f4f0; }
+    .icon-button.icon-danger { color: var(--red); }
+    .icon-button.icon-danger:hover { color: #91362f; background: var(--red-light); }
+    .icon-button svg { width: 17px; height: 17px; }
+    .form-body { display: grid; grid-template-columns: 1fr 1fr; gap: 13px 12px; padding: 19px 22px 22px; }
+    .field { display: grid; align-content: start; gap: 6px; }
+    .field.full { grid-column: 1 / -1; }
+    .field label { color: #4b5a51; font-size: 10px; font-weight: 600; }
+    .field input, .field select, .field textarea { width: 100%; min-height: 37px; padding: 8px 10px; border: 1px solid #dfe5de; border-radius: 5px; outline: none; color: var(--ink); background: white; font-size: 11px; }
+    .field textarea { min-height: 65px; resize: vertical; }
+    .form-help { color: var(--muted); font-size: 10px; line-height: 1.45; }
+    .form-actions { grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 8px; padding-top: 5px; }
+    .toast { position: fixed; right: 22px; bottom: 20px; z-index: 10; max-width: min(360px, calc(100% - 36px)); padding: 12px 15px; border-radius: 6px; color: white; background: #203b30; box-shadow: 0 8px 30px #203b3030; font-size: 12px; animation: appear .2s ease-out; }
+    .auth-screen { min-height: 100vh; display: grid; place-items: center; padding: 24px; background: var(--canvas); }
+    .auth-panel { width: min(420px, 100%); padding: 26px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); }
+    .auth-logo { display: block; width: min(220px, 100%); height: auto; margin: 0 auto 18px; }
+    .auth-panel h1 { margin-bottom: 6px; font-size: 21px; }
+    .auth-description { margin-bottom: 20px; color: var(--muted); font-size: 12px; line-height: 1.55; }
+    .auth-form { display: grid; gap: 13px; }
+    .auth-error { margin: 14px 0 0; padding: 10px 12px; border-radius: 5px; color: #9d342d; background: var(--red-light); font-size: 11px; line-height: 1.5; }
+    .auth-success { margin: 0; padding: 10px 12px; border-radius: 5px; color: #28714f; background: #eaf4ed; font-size: 11px; line-height: 1.5; }
+    .form-body > .auth-error, .form-body > .auth-success { grid-column: 1 / -1; }
+    .auth-footnote { margin: 16px 0 0; color: var(--muted); font-size: 10px; line-height: 1.5; }
+    .user-actions { display: flex; align-items: center; gap: 10px; }
+    .user-name { color: var(--muted); font-size: 12px; }
+    .user-table-actions { display: flex; gap: 6px; }
+    .access-request-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 17px; border-bottom: 1px solid #eef0ed; }
+    .access-request-row:last-child { border-bottom: 0; }
+    .access-request-actions { display: flex; gap: 7px; }
+    @keyframes appear { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 1050px) {
+      .sidebar { width: 208px; }
+      .main { margin-left: 208px; }
+      .content { padding-right: 24px; padding-left: 24px; }
+      .topbar { padding-right: 24px; padding-left: 24px; }
+      .metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 760px) {
+      .sidebar { position: sticky; inset: 0 0 auto; width: 100%; height: auto; padding: 10px 12px 8px; }
+      .brand { padding: 0 5px 10px; }
+      .brand { max-width: 210px; padding-bottom: 10px; }
+      .nav-label, .sidebar-bottom { display: none; }
+      .nav-list { display: flex; gap: 3px; overflow-x: auto; }
+      .nav-button { min-height: 36px; flex: 0 0 auto; gap: 7px; padding: 0 9px; font-size: 11px; }
+      .nav-button svg { width: 15px; height: 15px; }
+      .nav-count { min-width: 16px; padding: 1px 4px; }
+      .main { margin-left: 0; }
+      .topbar { min-height: 48px; padding: 0 17px; }
+      .topbar-right { gap: 9px; }
+      .today { font-size: 10px; }
+      .user-name { display: none; }
+      .user-badge { width: 29px; height: 29px; }
+      .content { padding: 23px 16px 40px; }
+      .dashboard-grid { grid-template-columns: 1fr; gap: 0; }
+      .page-heading { align-items: flex-start; }
+      .page-heading .button { flex: 0 0 auto; }
+      h1 { font-size: 22px; }
+    }
+    @media (max-width: 480px) {
+      .metric-grid { gap: 9px; }
+      .metric { min-height: 105px; padding: 13px; }
+      .metric-value { font-size: 24px; }
+      .metric-top { font-size: 10px; }
+      .page-heading { flex-direction: column; align-items: stretch; }
+      .page-heading .button { align-self: flex-start; }
+      .toolbar { align-items: stretch; }
+      .search-field { width: 100%; }
+      .toolbar select { flex: 1; }
+      .toolbar-spacer { display: none; }
+      .panel-heading { padding: 0 13px; }
+      th, td { padding-right: 11px; padding-left: 11px; }
+      .form-body { grid-template-columns: 1fr; padding: 16px; }
+      .field.full, .form-actions { grid-column: auto; }
+      .dialog-head { padding: 17px 16px 13px; }
+    }
+  </style>
+</head>
+<body>
+  <section class="auth-screen" id="auth-screen">
+    <div class="auth-panel">
+      <img class="auth-logo" src="litoral-med-20-anos.png" alt="Litoral MED">
+      <h1 id="auth-title">Entrar no sistema</h1>
+      <p class="auth-description" id="auth-description">Acesse sua conta para consultar a frota compartilhada.</p>
+      <form id="bootstrap-form" class="auth-form hidden">
+        <div class="field"><label for="bootstrap-username">Usuário administrador</label><input id="bootstrap-username" name="username" autocomplete="username" minlength="3" maxlength="40" pattern="[A-Za-z0-9._-]{3,40}" required><span class="form-help">3 a 40 caracteres: letras sem acento, números, ponto, hífen ou sublinhado. Sem espaços ou e-mail.</span></div>
+        <div class="field"><label for="bootstrap-password">Crie uma senha</label><input id="bootstrap-password" name="password" type="password" autocomplete="new-password" minlength="8" maxlength="128" required><span class="form-help">Use pelo menos 8 caracteres. A senha não possui valor padrão.</span></div>
+        <button class="button button-primary" type="submit">Criar administrador</button>
+      </form>
+      <form id="login-form" class="auth-form hidden">
+        <div class="field"><label for="login-username">Usuário ou e-mail</label><input id="login-username" name="username" autocomplete="username" required></div>
+        <div class="field"><label for="login-password">Senha</label><input id="login-password" name="password" type="password" autocomplete="current-password" required></div>
+        <button class="button button-primary" type="submit">Entrar</button>
+      </form>
+      <button class="button button-secondary hidden" id="request-access-open" type="button">Solicitar acesso</button>
+      <p class="auth-error hidden" id="auth-error" role="alert"></p>
+      <p class="auth-footnote">Novos acessos dependem da aprovação do administrador. Se esquecer sua senha, peça a redefinição ao administrador da frota.</p>
+    </div>
+  </section>
+
+  <div class="app hidden" id="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-logo-frame"><img class="brand-logo" src="litoral-med-20-anos.png" alt="Litoral MED, mais saúde, mais vida, 20 anos, 2006 a 2026"></div>
+        <div class="brand-caption">Gestão de frota</div>
+      </div>
+      <div class="nav-label">Operação</div>
+      <nav class="nav-list" aria-label="Navegação principal">
+        <button class="nav-button active" data-view="dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="5" rx="1"/><rect x="13" y="10" width="8" height="11" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/></svg>Visão geral</button>
+        <button class="nav-button" data-view="vehicles"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m5 11 1.5-4.2A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.8L19 11"/><path d="M3 11h18v7a1 1 0 0 1-1 1h-1v2h-3v-2H8v2H5v-2H4a1 1 0 0 1-1-1z"/><path d="M6 15h.01M18 15h.01M3 13h3m12 0h3"/></svg>Veículos</button>
+        <button class="nav-button" data-view="movements"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h15m-4-4 4 4-4 4M20 17H5m4-4-4 4 4 4"/></svg>Movimentações<span id="nav-movement-count" class="nav-count hidden">0</span></button>
+        <button class="nav-button" data-view="maintenance"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a5 5 0 0 0-6.4 6.4L3 18l3 3 5.3-5.3a5 5 0 0 0 6.4-6.4L14 13l-3-3z"/><path d="m14 5 5-2 2 2-2 5"/></svg>Manutenções<span id="nav-alert-count" class="nav-count hidden">0</span></button>
+        <button class="nav-button" data-view="licensing"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7m-7 4h7"/></svg>Licenciamentos<span id="nav-license-count" class="nav-count hidden">0</span></button>
+        <button class="nav-button" data-view="insurance"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"/><path d="m9 12 2 2 4-4"/></svg>Seguros<span id="nav-insurance-count" class="nav-count hidden">0</span></button>
+        <button class="nav-button" data-view="incidents"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/></svg>Sinistros<span id="nav-incident-count" class="nav-count hidden">0</span></button>
+        <button class="nav-button hidden" id="users-nav" data-view="users"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M20 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Usuários</button>
+      </nav>
+      <div class="sidebar-bottom"><strong>Controle operacional</strong><br>Dados salvos neste dispositivo.</div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="breadcrumb">Frota <span aria-hidden="true"> / </span> <strong id="breadcrumb-current">Visão geral</strong></div>
+        <div class="topbar-right"><span class="today" id="today"></span><div class="user-actions"><span class="user-name" id="active-username"></span><span class="user-badge" id="user-badge" aria-label="Usuário"></span><button class="button button-secondary button-small" data-action="logout">Sair</button></div></div>
+      </header>
+
+      <div class="content">
+        <section class="view" id="view-dashboard">
+          <div class="page-heading"><div><h1>Visão geral</h1><p class="page-subtitle">Acompanhe a operação e antecipe as próximas revisões.</p></div><button class="button button-primary" data-action="new-movement"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h15m-4-4 4 4-4 4M20 17H5m4-4-4 4 4 4"/></svg>Nova movimentação</button></div>
+          <div class="metric-grid" id="metrics"></div>
+          <div class="dashboard-grid">
+            <div>
+              <section class="panel"><div class="panel-heading"><h2>Movimentações recentes</h2><button class="text-link" data-go="movements">Ver histórico</button></div><div class="table-wrap"><table><thead><tr><th>Veículo</th><th>Trajeto</th><th>Responsável</th><th>Data</th></tr></thead><tbody id="recent-movements"></tbody></table></div></section>
+              <section class="panel"><div class="panel-heading"><h2>Veículos por unidade</h2><button class="text-link" data-go="vehicles">Ver frota</button></div><div class="unit-strip" id="unit-summary"></div></section>
+            </div>
+            <div>
+              <section class="panel"><div class="panel-heading"><h2>Recebimentos pendentes</h2><button class="text-link" data-go="movements">Ver transferências</button></div><div class="alerts-list" id="pending-receipts"></div></section>
+              <section class="panel"><div class="panel-heading"><h2>Revisões a acompanhar</h2><button class="text-link" data-go="maintenance">Ver agenda</button></div><div class="alerts-list" id="dashboard-alerts"></div></section>
+              <section class="panel"><div class="panel-heading"><h2>Licenciamentos a acompanhar</h2><button class="text-link" data-go="licensing">Ver agenda</button></div><div class="alerts-list" id="dashboard-licensing-alerts"></div></section>
+              <section class="panel"><div class="panel-heading"><h2>Seguros a acompanhar</h2><button class="text-link" data-go="insurance">Ver seguros</button></div><div class="alerts-list" id="dashboard-insurance-alerts"></div></section>
+            </div>
+          </div>
+        </section>
+
+        <section class="view hidden" id="view-vehicles">
+          <div class="page-heading"><div><h1>Veículos</h1><p class="page-subtitle">Cadastro da frota e unidade onde cada veículo está alocado.</p></div><div class="page-actions"><button class="button button-danger" data-action="clear-fleet" title="Apaga todos os veículos e movimentações"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2m3 0-.8 14H5.8L5 6m4 4v6m6-6v6"/></svg>Apagar frota</button><button class="button button-primary" data-action="new-vehicle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Adicionar veículo</button></div></div>
+          <div class="toolbar"><label class="search-field"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="vehicle-search" type="search" placeholder="Buscar frota, placa, modelo ou unidade" aria-label="Buscar veículo"></label><select id="vehicle-filter" aria-label="Filtrar por unidade"><option value="">Todas as unidades</option></select><span class="toolbar-spacer"></span><span class="page-subtitle" id="vehicle-total"></span></div>
+          <section class="panel"><div class="table-wrap"><table><thead><tr><th>Frota</th><th>Veículo</th><th>Placa</th><th>Unidade atual</th><th>Odômetro</th><th>Próxima revisão</th><th>Situação</th><th>Ação</th></tr></thead><tbody id="vehicle-table"></tbody></table></div></section>
+        </section>
+
+        <section class="view hidden" id="view-movements">
+          <div class="page-heading"><div><h1>Movimentações</h1><p class="page-subtitle">Histórico de transferências entre unidades da frota.</p></div><button class="button button-primary" data-action="new-movement"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h15m-4-4 4 4-4 4M20 17H5m4-4-4 4 4 4"/></svg>Registrar transferência</button></div>
+          <p class="section-note">A unidade do veículo muda após a confirmação do recebedor. Pendências há mais de 24 horas ficam destacadas.</p>
+          <section class="panel"><div class="table-wrap"><table><thead><tr><th>Data</th><th>Veículo</th><th>Origem</th><th>Destino</th><th>Solicitante</th><th>Recebedor</th><th>Situação</th><th>Ação</th></tr></thead><tbody id="movement-table"></tbody></table></div></section>
+        </section>
+
+        <section class="view hidden" id="view-maintenance">
+          <div class="page-heading"><div><h1>Manutenções</h1><p class="page-subtitle">Revisões planejadas, vencidas e próximas do prazo.</p></div><button class="button button-primary" data-action="new-maintenance"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Agendar revisão</button></div>
+          <p class="section-note">Os alertas consideram revisões vencidas, até 30 dias ou a menos de 1.000 km.</p>
+          <section class="panel"><div class="panel-heading"><h2>Agenda de revisões</h2><span class="page-subtitle" id="maintenance-total"></span></div><div class="table-wrap"><table><thead><tr><th>Veículo</th><th>Unidade</th><th>Revisão por data</th><th>Revisão por km</th><th>Situação</th></tr></thead><tbody id="maintenance-table"></tbody></table></div></section>
+          <section class="panel"><div class="panel-heading"><h2>Como os alertas são calculados</h2></div><div class="unit-strip"><span class="unit-pill"><span class="status status-danger">Vencida</span> Data ou quilometragem ultrapassada</span><span class="unit-pill"><span class="status status-warn">Atenção</span> Até 30 dias ou até 1.000 km</span><span class="unit-pill"><span class="status status-ok">Em dia</span> Fora da janela de alerta</span></div></section>
+        </section>
+
+        <section class="view hidden" id="view-licensing">
+          <div class="page-heading"><div><h1>Licenciamentos</h1><p class="page-subtitle">Acompanhe os vencimentos do CRLV/CRLV-e de cada veículo.</p></div><button class="button button-primary" data-action="new-licensing"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Atualizar vencimento</button></div>
+          <p class="section-note">O painel destaca documentos vencidos, com vencimento nos próximos 30 dias ou sem prazo cadastrado.</p>
+          <section class="panel"><div class="panel-heading"><h2>Agenda de licenciamentos</h2><span class="page-subtitle" id="licensing-total"></span></div><div class="table-wrap"><table><thead><tr><th>Veículo</th><th>Unidade</th><th>Vencimento</th><th>Situação</th><th>Ação</th></tr></thead><tbody id="licensing-table"></tbody></table></div></section>
+        </section>
+
+        <section class="view hidden" id="view-insurance">
+          <div class="page-heading"><div><h1>Seguros</h1><p class="page-subtitle">Apólices, seguradoras e prazos da frota.</p></div><button class="button button-primary" data-action="new-insurance"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Lançar seguro</button></div>
+          <p class="section-note">Seguros vencidos ou com vencimento nos próximos 30 dias ficam em destaque; cadastros incompletos também são sinalizados.</p>
+          <section class="panel"><div class="panel-heading"><h2>Apólices da frota</h2><span class="page-subtitle" id="insurance-total"></span></div><div class="table-wrap"><table><thead><tr><th>Veículo</th><th>Apólice</th><th>Seguradora</th><th>Contratação</th><th>Vencimento</th><th>Situação</th><th>Ação</th></tr></thead><tbody id="insurance-table"></tbody></table></div></section>
+        </section>
+
+        <section class="view hidden" id="view-incidents">
+          <div class="page-heading"><div><h1>Sinistros</h1><p class="page-subtitle">Registro de acidentes, avarias e ocorrências da frota.</p></div><button class="button button-primary" data-action="new-incident"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Registrar sinistro</button></div>
+          <p class="section-note">Acompanhe custo, responsável, tipo e status dos sinistros ativos e resolvidos.</p>
+          <section class="panel"><div class="panel-heading"><h2>Ocorrências da frota</h2><span class="page-subtitle" id="incident-total"></span></div><div class="table-wrap"><table><thead><tr><th>Veículo</th><th>Tipo</th><th>Data</th><th>Responsável</th><th>Severidade</th><th>Status</th><th>Valor</th></tr></thead><tbody id="incident-table"></tbody></table></div></section>
+        </section>
+
+        <section class="view hidden" id="view-users">
+          <div class="page-heading"><div><h1>Usuários</h1><p class="page-subtitle">Contas autorizadas a acessar a frota compartilhada.</p></div><div class="user-table-actions"><button class="button button-secondary" id="show-access-requests" type="button">Solicitações <span id="access-request-count">0</span></button><button class="button button-primary" data-action="new-user"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Criar usuário</button></div></div>
+          <section class="panel"><div class="table-wrap"><table><thead><tr><th>Usuário</th><th>Perfil</th><th>Criado em</th><th>Situação</th><th>Ações</th></tr></thead><tbody id="users-table"></tbody></table></div></section>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <dialog id="vehicle-dialog">
+    <div class="dialog-head"><div><h2 id="vehicle-dialog-title">Adicionar veículo</h2><p id="vehicle-dialog-description">Inclua o veículo e os dados da próxima revisão.</p></div><button class="icon-button" data-close="vehicle-dialog" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m18 6-12 12M6 6l12 12"/></svg></button></div>
+    <form id="vehicle-form" class="form-body">
+      <input type="hidden" name="vehicleId">
+      <div class="field"><label for="vehicle-fleet-number">Frota</label><input id="vehicle-fleet-number" name="fleetNumber" type="text" inputmode="numeric" maxlength="20" placeholder="Ex.: 01"></div>
+      <div class="field"><label for="vehicle-plate">Placa</label><input id="vehicle-plate" name="plate" maxlength="8" placeholder="ABC1D23" required></div>
+      <div class="field"><label for="vehicle-make">Marca</label><input id="vehicle-make" name="make" placeholder="Ex.: Fiat" required></div>
+      <div class="field"><label for="vehicle-model">Modelo</label><input id="vehicle-model" name="model" placeholder="Ex.: Fiorino Endurance" required></div>
+      <div class="field"><label for="vehicle-renavam">RENAVAM</label><input id="vehicle-renavam" name="renavam" type="text" inputmode="numeric" minlength="9" maxlength="11" pattern="([0-9]{9}|[0-9]{11})" placeholder="9 ou 11 dígitos" required></div>
+      <div class="field"><label for="vehicle-chassis">Chassi</label><input id="vehicle-chassis" name="chassis" type="text" minlength="17" maxlength="17" pattern="[A-HJ-NPR-Z0-9]{17}" placeholder="17 caracteres" required></div>
+      <div class="field"><label for="vehicle-manufacture-year">Ano de fabricação</label><input id="vehicle-manufacture-year" name="manufactureYear" type="number" min="1950" step="1" placeholder="Ex.: 2024" required></div>
+      <div class="field"><label for="vehicle-model-year">Ano do modelo</label><input id="vehicle-model-year" name="modelYear" type="number" min="1950" step="1" placeholder="Ex.: 2025" required></div>
+      <div class="field"><label for="vehicle-unit">Unidade atual</label><input id="vehicle-unit" name="unit" list="unit-options" placeholder="Ex.: Base Santos" required></div>
+      <div class="field"><label for="vehicle-km">Odômetro atual (km)</label><input id="vehicle-km" name="km" type="number" min="0" step="1" placeholder="Ex.: 42800" required></div>
+      <div class="field"><label for="vehicle-next-date">Próxima revisão por data</label><input id="vehicle-next-date" name="nextDate" type="date"></div>
+      <div class="field"><label for="vehicle-next-km">Próxima revisão por km</label><input id="vehicle-next-km" name="nextKm" type="number" min="0" step="1" placeholder="Ex.: 45000"></div>
+      <div class="field full"><label for="vehicle-license-date">Vencimento do licenciamento (CRLV/CRLV-e)</label><input id="vehicle-license-date" name="licenseDueDate" type="date"></div>
+      <div class="field"><label for="vehicle-insurance-policy">Número da apólice</label><input id="vehicle-insurance-policy" name="insurancePolicy" placeholder="Número da apólice"></div>
+      <div class="field"><label for="vehicle-insurer">Seguradora</label><input id="vehicle-insurer" name="insurer" placeholder="Nome da seguradora"></div>
+      <div class="field"><label for="vehicle-insurance-contract-date">Data de contratação</label><input id="vehicle-insurance-contract-date" name="insuranceContractDate" type="date"></div>
+      <div class="field"><label for="vehicle-insurance-due-date">Vencimento do seguro</label><input id="vehicle-insurance-due-date" name="insuranceDueDate" type="date"></div>
+      <div class="field full"><span class="form-help">Preencha ao menos um dos critérios de revisão. O primeiro que atingir o prazo gera o alerta.</span></div>
+      <div class="form-actions"><button type="button" class="button button-secondary" data-close="vehicle-dialog">Cancelar</button><button class="button button-primary" id="vehicle-submit" type="submit">Salvar veículo</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="odometer-dialog">
+    <div class="dialog-head"><div><h2>Atualizar quilometragem</h2><p>Informe a leitura atual do painel do veículo.</p></div><button class="icon-button" data-close="odometer-dialog" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m18 6-12 12M6 6l12 12"/></svg></button></div>
+    <form id="odometer-form" class="form-body">
+      <div class="field full"><label for="odometer-vehicle">Veículo</label><select id="odometer-vehicle" name="vehicleId" required></select></div>
+      <div class="field"><label for="odometer-current">Quilometragem registrada</label><input id="odometer-current" type="text" readonly></div>
+      <div class="field"><label for="odometer-km">Nova leitura (km)</label><input id="odometer-km" name="km" type="number" min="0" step="1" placeholder="Ex.: 45820" required></div>
+      <div class="field"><label for="odometer-date">Data da leitura</label><input id="odometer-date" name="readingDate" type="date" required></div>
+      <div class="field"><label for="odometer-responsible">Responsável pela leitura</label><input id="odometer-responsible" name="responsible" placeholder="Nome de quem conferiu" required></div>
+      <div class="field full"><span class="form-help">A leitura manual atualiza os alertas de manutenção. Integrações automáticas poderão usar o mesmo histórico de quilometragem.</span></div>
+      <div class="field full"><span id="odometer-history" class="form-help">As leituras serão salvas no histórico do veículo.</span></div>
+      <div class="form-actions"><button type="button" class="button button-secondary" data-close="odometer-dialog">Cancelar</button><button class="button button-primary" type="submit">Salvar leitura</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="movement-dialog">
+    <div class="dialog-head"><div><h2>Registrar movimentação</h2><p>A transferência altera a unidade atual do veículo.</p></div><button class="icon-button" data-close="movement-dialog" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m18 6-12 12M6 6l12 12"/></svg></button></div>
+    <form id="movement-form" class="form-body">
+      <div class="field full"><label for="movement-vehicle">Veículo</label><select id="movement-vehicle" name="vehicleId" required></select></div>
+      <div class="field"><label for="movement-origin">Unidade de origem</label><input id="movement-origin" name="origin" readonly></div>
+      <div class="field"><label for="movement-destination">Unidade de destino</label><input id="movement-destination" name="destination" list="unit-options" placeholder="Ex.: Base Guarujá" required></div>
+      <div class="field"><label for="movement-date">Data da movimentação</label><input id="movement-date" name="date" type="date" required></div>
+      <div class="field"><label for="movement-person">Solicitante da transferência</label><input id="movement-person" name="person" placeholder="Nome do solicitante" required></div>
+      <div class="field full"><label for="movement-receiver">Responsável por receber</label><input id="movement-receiver" name="receiver" placeholder="Nome de quem confirmará o recebimento" required></div>
+      <div class="field full"><label for="movement-reason">Motivo</label><textarea id="movement-reason" name="reason" placeholder="Ex.: reforço de equipe na unidade"></textarea></div>
+      <div class="form-actions"><button type="button" class="button button-secondary" data-close="movement-dialog">Cancelar</button><button class="button button-primary" type="submit">Registrar transferência</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="maintenance-dialog">
+    <div class="dialog-head"><div><h2>Agendar revisão</h2><p>Atualize o próximo prazo de manutenção do veículo.</p></div><button class="icon-button" data-close="maintenance-dialog" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m18 6-12 12M6 6l12 12"/></svg></button></div>
+    <form id="maintenance-form" class="form-body">
+      <div class="field full"><label for="maintenance-vehicle">Veículo</label><select id="maintenance-vehicle" name="vehicleId" required></select></div>
+      <div class="field"><label for="maintenance-date">Próxima revisão por data</label><input id="maintenance-date" name="nextDate" type="date"></div>
+      <div class="field"><label for="maintenance-km">Próxima revisão por km</label><input id="maintenance-km" name="nextKm" type="number" min="0" step="1" placeholder="Quilometragem"></div>
+      <div class="field full"><span class="form-help">Informe ao menos uma data ou quilometragem para a próxima revisão.</span></div>
+      <div class="form-actions"><button type="button" class="button button-secondary" data-close="maintenance-dialog">Cancelar</button><button class="button button-primary" type="submit">Salvar revisão</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="licensing-dialog">
+    <div class="dialog-head"><div><h2>Atualizar licenciamento</h2><p>Informe a data de vencimento do CRLV/CRLV-e.</p></div><button class="icon-button" data-close="licensing-dialog" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m18 6-12 12M6 6l12 12"/></svg></button></div>
+    <form id="licensing-form" class="form-body">
+      <div class="field full"><label for="licensing-vehicle">Veículo</label><select id="licensing-vehicle" name="vehicleId" required></select></div>
+      <div class="field full"><label for="licensing-date">Data de vencimento</label><input id="licensing-date" name="licenseDueDate" type="date" required></div>
+      <div class="field full"><span class="form-help">A data atualiza o status e os alertas da agenda de licenciamentos.</span></div>
+      <div class="form-actions"><button type="button" class="button button-secondary" data-close="licensing-dialog">Cancelar</button><button class="button button-primary" type="submit">Salvar vencimento</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="insurance-dialog">
+    <div class="dialog-head"><div><h2>Lançar seguro</h2><p>Registre a apólice e o período de cobertura.</p></div><button class="icon-button" data-close="insurance-dialog" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m18 6-12 12M6 6l12 12"/></svg></button></div>
+    <form id="insurance-form" class="form-body">
+      <div class="field full"><label for="insurance-vehicle">Veículo</label><select id="insurance-vehicle" name="vehicleId" required></select></div>
+      <div class="field"><label for="insurance-policy">Número da apólice</label><input id="insurance-policy" name="insurancePolicy" placeholder="Número da apólice" required></div>
+      <div class="field"><label for="insurance-provider">Seguradora</label><input id="insurance-provider" name="insurer" placeholder="Nome da seguradora" required></div>
+      <div class="field"><label for="insurance-contract-date">Data de contratação</label><input id="insurance-contract-date" name="insuranceContractDate" type="date" required></div>
+      <div class="field"><label for="insurance-due-date">Vencimento</label><input id="insurance-due-date" name="insuranceDueDate" type="date" required></div>
+      <div class="form-actions"><button type="button" class="button button-secondary" data-close="insurance-dialog">Cancelar</button><button class="button button-primary" type="submit">Salvar seguro</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="incident-dialog">
+    <div class="dialog-head"><div><h2>Registrar sinistro</h2><p>Informe os dados da ocorrência e acompanhe o andamento.</p></div><button class="icon-button" data-close="incident-dialog" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m18 6-12 12M6 6l12 12"/></svg></button></div>
+    <form id="incident-form" class="form-body">
+      <div class="field full"><label for="incident-vehicle">Veículo</label><select id="incident-vehicle" name="vehicleId" required></select></div>
+      <div class="field"><label for="incident-date">Data</label><input id="incident-date" name="date" type="date" required></div>
+      <div class="field"><label for="incident-type">Tipo</label><input id="incident-type" name="type" placeholder="Ex.: Colisão" required></div>
+      <div class="field"><label for="incident-severity">Severidade</label><select id="incident-severity" name="severity" required><option value="low">Baixa</option><option value="medium" selected>Média</option><option value="high">Alta</option></select></div>
+      <div class="field"><label for="incident-status">Status</label><select id="incident-status" name="status" required><option value="open" selected>Aberto</option><option value="in_progress">Em andamento</option><option value="resolved">Resolvido</option></select></div>
+      <div class="field full"><label for="incident-title">Título</label><input id="incident-title" name="title" placeholder="Resumo curto da ocorrência" required></div>
+      <div class="field full"><label for="incident-description">Descrição</label><textarea id="incident-description" name="description" placeholder="Detalhe o ocorrido e os próximos passos" required></textarea></div>
+      <div class="field full"><label for="incident-responsible">Responsável</label><input id="incident-responsible" name="responsible" placeholder="Nome de quem registrou a ocorrência" required></div>
+      <div class="field"><label for="incident-cost">Valor estimado</label><input id="incident-cost" name="cost" type="number" min="0" step="0.01" placeholder="Ex.: 1500,00"></div>
+      <div class="field full"><span class="form-help">Os sinistros aparecem na lista da frota e ajudam a acompanhar custos e status de resolução.</span></div>
+      <div class="form-actions"><button type="button" class="button button-secondary" data-close="incident-dialog">Cancelar</button><button class="button button-primary" type="submit">Registrar sinistro</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="access-request-dialog">
+    <div class="dialog-head"><div><h2>Solicitar acesso</h2><p>Informe seu e-mail e escolha uma senha. A conta será criada após a aprovação do administrador.</p></div><button class="icon-button" data-close="access-request-dialog" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m18 6-12 12M6 6l12 12"/></svg></button></div>
+    <form id="access-request-form" class="form-body">
+      <div class="field full"><label for="request-email">E-mail</label><input id="request-email" name="email" type="email" maxlength="254" autocomplete="email" required></div>
+      <div class="field full"><label for="request-password">Crie uma senha</label><input id="request-password" name="password" type="password" minlength="8" maxlength="128" autocomplete="new-password" required><span class="form-help">Use pelo menos 8 caracteres. Você usará este e-mail para entrar.</span></div>
+      <div class="field full"><label for="request-password-confirm">Confirme a senha</label><input id="request-password-confirm" name="passwordConfirm" type="password" minlength="8" maxlength="128" autocomplete="new-password" required></div>
+      <p class="auth-error hidden" id="access-request-error" role="alert"></p>
+      <p class="auth-success hidden" id="access-request-success" role="status">Solicitação enviada. Aguarde a aprovação do administrador antes de entrar.</p>
+      <div class="form-actions"><button type="button" class="button button-secondary" data-close="access-request-dialog">Cancelar</button><button class="button button-primary" type="submit" id="access-request-submit">Enviar solicitação</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="access-requests-dialog">
+    <div class="dialog-head"><div><h2>Solicitações de acesso</h2><p>O e-mail não é verificado pela plataforma. Confirme o endereço antes de aprovar a conta.</p></div><button class="icon-button" data-close="access-requests-dialog" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m18 6-12 12M6 6l12 12"/></svg></button></div>
+    <div id="access-requests-list" class="alerts-list"></div>
+  </dialog>
+
+  <dialog id="user-dialog">
+    <div class="dialog-head"><div><h2 id="user-dialog-title">Criar usuário</h2><p id="user-dialog-description">A nova conta terá acesso compartilhado à frota.</p></div><button class="icon-button" data-close="user-dialog" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m18 6-12 12M6 6l12 12"/></svg></button></div>
+    <form id="user-form" class="form-body">
+      <input type="hidden" name="userId">
+      <div class="field full"><label for="managed-username">Usuário</label><input id="managed-username" name="username" minlength="3" maxlength="40" pattern="[A-Za-z0-9._-]{3,40}" autocomplete="off" required><span class="form-help">3 a 40 caracteres: letras sem acento, números, ponto, hífen ou sublinhado. Sem espaços ou e-mail.</span></div>
+      <div class="field full" id="user-role-field"><label for="managed-role">Perfil de acesso</label><select id="managed-role" name="role"><option value="member">Usuário da frota</option><option value="admin">Administrador</option></select></div>
+      <div class="field full"><label for="managed-password">Senha temporária / nova senha</label><input id="managed-password" name="password" type="password" minlength="8" maxlength="128" autocomplete="new-password" required><span class="form-help">Mínimo de 8 caracteres. Senhas não são exibidas depois de salvas.</span></div>
+      <p class="auth-error hidden" id="user-error" role="alert"></p>
+      <div class="form-actions"><button type="button" class="button button-secondary" data-close="user-dialog">Cancelar</button><button class="button button-primary" type="submit" id="user-form-submit">Criar conta</button></div>
+    </form>
+  </dialog>
+
+  <datalist id="unit-options"></datalist>
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+  <script>
+    (() => {
+      const STORAGE_KEY = 'litoral-med-frota-v1';
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const isoToday = dateInputValue(today);
+      const initialData = {
+        vehicles: [
+          { id: 'v1', plate: 'RTA4J82', model: 'Fiat Fiorino Endurance', unit: 'Base Santos', km: 42850, nextDate: addDays(18), nextKm: 45000, licenseDueDate: addDays(55) },
+          { id: 'v2', plate: 'GQH8C17', model: 'Renault Master L2H2', unit: 'Base São Vicente', km: 89520, nextDate: addDays(64), nextKm: 90000, licenseDueDate: addDays(-8) },
+          { id: 'v3', plate: 'FZE2B41', model: 'Fiat Strada Freedom', unit: 'Base Guarujá', km: 61230, nextDate: addDays(-4), nextKm: 62000, licenseDueDate: addDays(18) },
+          { id: 'v4', plate: 'SUL9D06', model: 'Chevrolet Spin LT', unit: 'Base Santos', km: 33700, nextDate: addDays(91), nextKm: 35000, licenseDueDate: addDays(120) },
+          { id: 'v5', plate: 'QPK3A55', model: 'Renault Kangoo Express', unit: 'Base Praia Grande', km: 74880, nextDate: addDays(9), nextKm: 75000, licenseDueDate: addDays(0) },
+          { id: 'v6', plate: 'HNM7E29', model: 'Fiat Fiorino Endurance', unit: 'Base Cubatão', km: 28610, nextDate: addDays(48), nextKm: 30000, licenseDueDate: addDays(180) },
+          { id: 'v7', plate: 'TVC1F73', model: 'Peugeot Partner Rapid', unit: 'Base São Vicente', km: 53140, nextDate: addDays(122), nextKm: 55000, licenseDueDate: addDays(32) },
+          { id: 'v8', plate: 'JLR5H20', model: 'Chevrolet Montana', unit: 'Base Santos', km: 46750, nextDate: addDays(27), nextKm: 47000, licenseDueDate: addDays(270) }
+        ],
+        movements: [
+          { id: 'm1', vehicleId: 'v4', origin: 'Base Guarujá', destination: 'Base Santos', date: addDays(-1), person: 'Mariana Costa', reason: 'Cobertura de plantão' },
+          { id: 'm2', vehicleId: 'v6', origin: 'Base Praia Grande', destination: 'Base Cubatão', date: addDays(-3), person: 'Rafael Nunes', reason: 'Reforço de equipe' },
+          { id: 'm3', vehicleId: 'v2', origin: 'Base Santos', destination: 'Base São Vicente', date: addDays(-5), person: 'Carlos Mendes', reason: 'Ajuste operacional' },
+          { id: 'm4', vehicleId: 'v8', origin: 'Base São Vicente', destination: 'Base Santos', date: addDays(-8), person: 'Ana Ribeiro', reason: 'Substituição temporária' }
+        ],
+        incidents: []
+      };
+      let data = null;
+      let dataRevision = 0;
+      let currentUser = null;
+      let userCache = [];
+      let pendingSave = Promise.resolve(true);
+      let toastTimer;
+      let accessRequestTimer = null;
+      const seenAccessRequestIds = new Set();
+
+      function dateInputValue(date) {
+        const adjusted = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+        return adjusted.toISOString().slice(0, 10);
+      }
+      function addDays(days) {
+        const date = new Date(today);
+        date.setDate(date.getDate() + days);
+        return dateInputValue(date);
+      }
+      function loadData() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+          const loaded = saved && Array.isArray(saved.vehicles) && Array.isArray(saved.movements) ? saved : structuredClone(initialData);
+          loaded.movements = loaded.movements.map(movement => {
+            const status = movement.status === 'pending' ? 'pending' : 'received';
+            return {
+              ...movement,
+              status,
+              receiver: movement.receiver || '',
+              createdAt: movement.createdAt || `${movement.date}T12:00:00`,
+              receivedAt: status === 'received' ? movement.receivedAt || null : null,
+              receivedBy: status === 'received' ? movement.receivedBy || '' : ''
+            };
+          });
+          loaded.odometerReadings = Array.isArray(loaded.odometerReadings) ? loaded.odometerReadings : [];
+          loaded.incidents = Array.isArray(loaded.incidents) ? loaded.incidents : [];
+          return loaded;
+        } catch (error) { console.warn('Não foi possível ler os dados salvos.', error); }
+        return structuredClone(initialData);
+      }
+      function saveData() {
+        if (!currentUser || !data) return Promise.resolve(false);
+        pendingSave = pendingSave.then(async () => {
+          if (!currentUser || !data) return false;
+          const payload = JSON.stringify({ ...data, revision: dataRevision });
+          const result = await apiRequest('/api/data', { method: 'PUT', body: payload });
+          dataRevision = result.revision;
+          return true;
+        }).catch(error => {
+          if (error.status === 401) {
+            currentUser = null;
+            data = null;
+            showAuth('login', 'Sua sessão expirou. Entre novamente.');
+          } else if (error.status === 409) {
+            showToast('Outro usuário atualizou a frota. Recarregue a página antes de continuar.');
+          } else {
+            showToast(error.message || 'Não foi possível salvar os dados da frota.');
+          }
+          return false;
+        });
+        return pendingSave;
+      }
+      async function apiRequest(url, options = {}) {
+        const response = await fetch(url, {
+          credentials: 'same-origin',
+          ...options,
+          headers: { 'Content-Type': 'application/json', ...(options.headers || {}) }
+        });
+        let result = {};
+        try {
+          result = await response.json();
+        } catch {}
+        if (!response.ok) {
+          const error = new Error(result.error || 'Não foi possível concluir a solicitação.');
+          error.status = response.status;
+          throw error;
+        }
+        return result;
+      }
+      function escapeHtml(value) {
+        return String(value ?? '').replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
+      }
+      function formatDate(value) {
+        if (!value) return 'Não informada';
+        const [year, month, day] = value.split('-').map(Number);
+        return new Intl.DateTimeFormat('pt-BR').format(new Date(year, month - 1, day));
+      }
+      function formatKm(value) {
+        return Number(value).toLocaleString('pt-BR') + ' km';
+      }
+      function vehicleDisplayName(vehicle) {
+        return [vehicle.make, vehicle.model].filter(Boolean).join(' ') || 'Modelo não informado';
+      }
+      function vehicleById(id) { return data.vehicles.find(vehicle => vehicle.id === id); }
+      function daysUntil(value) {
+        if (!value) return null;
+        const [year, month, day] = value.split('-').map(Number);
+        return Math.ceil((new Date(year, month - 1, day).getTime() - today.getTime()) / 86400000);
+      }
+      function reviewStatus(vehicle) {
+        const remainingKm = vehicle.nextKm == null || vehicle.nextKm === '' ? null : Number(vehicle.nextKm) - Number(vehicle.km);
+        const remainingDays = daysUntil(vehicle.nextDate);
+        const overdue = (remainingKm !== null && remainingKm <= 0) || (remainingDays !== null && remainingDays < 0);
+        const dueSoon = (remainingKm !== null && remainingKm <= 1000) || (remainingDays !== null && remainingDays <= 30);
+        if (overdue) return { label: 'Vencida', className: 'status-danger', urgency: 0 };
+        if (dueSoon) return { label: 'Atenção', className: 'status-warn', urgency: 1 };
+        return { label: 'Em dia', className: 'status-ok', urgency: 2 };
+      }
+      function licensingStatus(vehicle) {
+        const days = daysUntil(vehicle.licenseDueDate);
+        if (days === null) return { label: 'Sem prazo', detail: 'Informe o vencimento do documento', className: 'status-neutral', urgency: 1 };
+        if (days < 0) return { label: 'Vencido', detail: `Vencido há ${Math.abs(days)} dia(s)`, className: 'status-danger', urgency: 0 };
+        if (days === 0) return { label: 'Vence hoje', detail: 'Vencimento hoje', className: 'status-warn', urgency: 1 };
+        if (days <= 30) return { label: 'Atenção', detail: `Vence em ${days} dia(s)`, className: 'status-warn', urgency: 1 };
+        return { label: 'Em dia', detail: `${days} dia(s) restantes`, className: 'status-ok', urgency: 2 };
+      }
+      function insuranceStatus(vehicle) {
+        const fields = [vehicle.insurancePolicy, vehicle.insurer, vehicle.insuranceContractDate, vehicle.insuranceDueDate].map(value => String(value || '').trim());
+        if (fields.every(value => !value)) return { label: 'Sem cadastro', detail: 'Informe os dados do seguro', className: 'status-neutral', urgency: 1 };
+        if (fields.some(value => !value)) return { label: 'Cadastro incompleto', detail: 'Preencha apólice, seguradora e datas', className: 'status-warn', urgency: 1 };
+        const days = daysUntil(vehicle.insuranceDueDate);
+        if (days < 0) return { label: 'Vencido', detail: `Vencido há ${Math.abs(days)} dia(s)`, className: 'status-danger', urgency: 0 };
+        if (days === 0) return { label: 'Vence hoje', detail: 'Vencimento hoje', className: 'status-warn', urgency: 1 };
+        if (days <= 30) return { label: 'Atenção', detail: `Vence em ${days} dia(s)`, className: 'status-warn', urgency: 1 };
+        return { label: 'Ativo', detail: `${days} dia(s) de cobertura`, className: 'status-ok', urgency: 2 };
+      }
+      function reviewDetail(vehicle) {
+        const days = daysUntil(vehicle.nextDate);
+        const km = vehicle.nextKm == null || vehicle.nextKm === '' ? null : Number(vehicle.nextKm) - Number(vehicle.km);
+        const details = [];
+        if (days !== null) details.push(days < 0 ? `vencida há ${Math.abs(days)} dia(s)` : days === 0 ? 'vence hoje' : `em ${days} dia(s)`);
+        if (km !== null) details.push(km <= 0 ? `${formatKm(Math.abs(km))} acima do prazo` : `faltam ${formatKm(km)}`);
+        return details.join(' · ') || 'Prazo não informado';
+      }
+      function escapeAttr(value) { return escapeHtml(value); }
+      function showToast(message) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.classList.remove('hidden');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.add('hidden'), 3200);
+      }
+      function showAuth(mode, message = '') {
+        document.getElementById('auth-screen').classList.remove('hidden');
+        document.getElementById('app-shell').classList.add('hidden');
+        document.getElementById('bootstrap-form').classList.toggle('hidden', mode !== 'setup');
+        document.getElementById('login-form').classList.toggle('hidden', mode !== 'login');
+        document.getElementById('request-access-open').classList.toggle('hidden', mode !== 'login');
+        document.getElementById('auth-title').textContent = mode === 'setup' ? 'Criar administrador' : 'Entrar no sistema';
+        document.getElementById('auth-description').textContent = mode === 'setup'
+          ? 'Configure a primeira conta. Depois, o administrador poderá criar os acessos da equipe.'
+          : 'Acesse sua conta para consultar a frota compartilhada.';
+        const error = document.getElementById('auth-error');
+        error.textContent = message;
+        error.classList.toggle('hidden', !message);
+      }
+      async function activateSession(user) {
+        currentUser = user;
+        try {
+          const remote = await apiRequest('/api/data');
+          dataRevision = remote.revision || 0;
+          if (remote.initialized) {
+            data = remote.data;
+            data.odometerReadings = Array.isArray(data.odometerReadings) ? data.odometerReadings : [];
+            data.movements = data.movements.map(movement => ({
+              ...movement,
+              status: movement.status === 'pending' ? 'pending' : 'received',
+              receiver: movement.receiver || '',
+              createdAt: movement.createdAt || `${movement.date}T12:00:00`,
+              receivedAt: movement.status === 'pending' ? null : movement.receivedAt || null,
+              receivedBy: movement.status === 'pending' ? '' : movement.receivedBy || ''
+            }));
+          } else {
+            data = loadData();
+            if (!await saveData()) throw new Error('Não foi possível importar os dados deste navegador para a frota compartilhada.');
+            localStorage.removeItem(STORAGE_KEY);
+          }
+          document.getElementById('auth-screen').classList.add('hidden');
+          document.getElementById('app-shell').classList.remove('hidden');
+          document.getElementById('active-username').textContent = user.username;
+          document.getElementById('user-badge').textContent = user.username.slice(0, 2).toUpperCase();
+          document.getElementById('users-nav').classList.toggle('hidden', user.role !== 'admin');
+          render();
+          if (user.role === 'admin') {
+            await refreshAccessRequests(true);
+            clearInterval(accessRequestTimer);
+            accessRequestTimer = setInterval(() => refreshAccessRequests(true).catch(error => showToast(error.message)), 30000);
+          }
+          return true;
+        } catch (error) {
+          currentUser = null;
+          data = null;
+          showAuth('login', error.message);
+          return false;
+        }
+      }
+      async function initializeSession() {
+        try {
+          const session = await apiRequest('/api/session');
+          if (session.authenticated) {
+            await activateSession(session.user);
+          } else {
+            showAuth(session.setupRequired ? 'setup' : 'login');
+          }
+        } catch {
+          showAuth('login', 'Não foi possível conectar ao servidor. Atualize a página ou tente novamente.');
+        }
+      }
+      async function logout() {
+        try { await apiRequest('/api/logout', { method: 'POST', body: '{}' }); } catch {}
+        clearInterval(accessRequestTimer);
+        accessRequestTimer = null;
+        currentUser = null;
+        data = null;
+        document.getElementById('users-nav').classList.add('hidden');
+        showAuth('login', 'Sessão encerrada.');
+      }
+      function showView(name) {
+        document.querySelectorAll('.view').forEach(view => view.classList.toggle('hidden', view.id !== `view-${name}`));
+        document.querySelectorAll('.nav-button').forEach(button => button.classList.toggle('active', button.dataset.view === name));
+        const labels = { dashboard: 'Visão geral', vehicles: 'Veículos', movements: 'Movimentações', maintenance: 'Manutenções', licensing: 'Licenciamentos', insurance: 'Seguros', users: 'Usuários' };
+        document.getElementById('breadcrumb-current').textContent = labels[name];
+        render();
+        if (name === 'users') renderUsers();
+      }
+      async function submitAuthentication(event, endpoint) {
+        event.preventDefault();
+        const form = event.currentTarget;
+        const submitButton = form.querySelector('[type="submit"]');
+        const formData = new FormData(form);
+        submitButton.disabled = true;
+        try {
+          const result = await apiRequest(endpoint, { method: 'POST', body: JSON.stringify({ username: String(formData.get('username')).trim(), password: String(formData.get('password')) }) });
+          form.reset();
+          await activateSession(result.user);
+        } catch (error) {
+          showAuth(endpoint === '/api/setup' && error.status === 409 ? 'login' : endpoint === '/api/setup' ? 'setup' : 'login', error.message);
+        } finally {
+          submitButton.disabled = false;
+        }
+      }
+      async function refreshAccessRequests(openForNewRequests = false) {
+        if (currentUser?.role !== 'admin') return;
+        const result = await apiRequest('/api/access-requests');
+        const requests = result.requests;
+        document.getElementById('access-request-count').textContent = requests.length;
+        document.getElementById('access-requests-list').innerHTML = requests.map(request => `
+          <div class="access-request-row">
+            <div><div class="alert-title">${escapeHtml(request.email)}</div><div class="alert-detail">Solicitado em ${formatDate(request.createdAt.slice(0, 10))}</div></div>
+            <div class="access-request-actions"><button class="button button-small button-primary" type="button" data-access-request-action="approve" data-access-request-id="${escapeAttr(request.id)}">Aprovar</button><button class="button button-small button-danger" type="button" data-access-request-action="deny" data-access-request-id="${escapeAttr(request.id)}">Recusar</button></div>
+          </div>`).join('') || '<div class="alert-empty">Nenhuma solicitação pendente.</div>';
+        const hasNewRequests = requests.some(request => !seenAccessRequestIds.has(request.id));
+        requests.forEach(request => seenAccessRequestIds.add(request.id));
+        const dialog = document.getElementById('access-requests-dialog');
+        if (requests.length && openForNewRequests && hasNewRequests && !dialog.open) dialog.showModal();
+      }
+      function renderMetrics() {
+        const attention = data.vehicles.filter(vehicle => reviewStatus(vehicle).urgency === 1).length;
+        const overdue = data.vehicles.filter(vehicle => reviewStatus(vehicle).urgency === 0).length;
+        const units = new Set(data.vehicles.map(vehicle => vehicle.unit)).size;
+        const pending = data.movements.filter(movement => movement.status === 'pending').length;
+        const licensingAttention = data.vehicles.filter(vehicle => licensingStatus(vehicle).urgency < 2).length;
+        const metrics = [
+          { label: 'Veículos na frota', value: data.vehicles.length, note: 'Total de veículos cadastrados', icon: 'car', tone: '' },
+          { label: 'Unidades atendidas', value: units, note: 'Com veículos alocados', icon: 'pin', tone: '' },
+          { label: 'Recebimentos pendentes', value: pending, note: 'Aguardando confirmação do recebedor', icon: 'transfer', tone: pending ? 'amber' : '' },
+          { label: 'Revisões próximas', value: attention, note: 'Prazo em até 30 dias ou 1.000 km', icon: 'wrench', tone: 'amber' },
+          { label: 'Revisões vencidas', value: overdue, note: 'Veículos que precisam de atenção', icon: 'alert', tone: 'red' },
+          { label: 'Licenciamentos a acompanhar', value: licensingAttention, note: 'Vencidos, próximos ou sem prazo', icon: 'document', tone: licensingAttention ? 'amber' : '' }
+        ];
+        const icons = {
+          car: '<path d="m5 11 1.5-4.2A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.8L19 11"/><path d="M3 11h18v7a1 1 0 0 1-1 1h-1v2h-3v-2H8v2H5v-2H4a1 1 0 0 1-1-1z"/><path d="M6 15h.01M18 15h.01"/>',
+          pin: '<path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/>',
+          wrench: '<path d="M14.7 6.3a5 5 0 0 0-6.4 6.4L3 18l3 3 5.3-5.3a5 5 0 0 0 6.4-6.4L14 13l-3-3z"/>',
+          alert: '<path d="M10.3 3.9 2.5 17.4A1.8 1.8 0 0 0 4 20h16a1.8 1.8 0 0 0 1.5-2.6L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4m0 3h.01"/>',
+          transfer: '<path d="M4 7h15m-4-4 4 4-4 4M20 17H5m4-4-4 4 4 4"/>',
+          document: '<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7m-7 4h7"/>'
+        };
+        document.getElementById('metrics').innerHTML = metrics.map(metric => `<article class="metric"><div class="metric-top"><span>${metric.label}</span><span class="metric-icon ${metric.tone}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${icons[metric.icon]}</svg></span></div><div class="metric-value">${metric.value}</div><div class="metric-note">${metric.note}</div></article>`).join('');
+      }
+      function renderUnitSummary() {
+        const counts = {};
+        data.vehicles.forEach(vehicle => { counts[vehicle.unit] = (counts[vehicle.unit] || 0) + 1; });
+        const entries = Object.entries(counts).sort((a, b) => a[0].localeCompare(b[0], 'pt-BR'));
+        document.getElementById('unit-summary').innerHTML = entries.length ? entries.map(([unit, count]) => `<span class="unit-pill">${escapeHtml(unit)} <strong>${count}</strong></span>`).join('') : '<div class="empty-state">Nenhuma unidade cadastrada.</div>';
+      }
+      function movementOverdue(movement) {
+        const startedAt = Date.parse(movement.createdAt);
+        return movement.status === 'pending' && Number.isFinite(startedAt) && Date.now() - startedAt >= 24 * 60 * 60 * 1000;
+      }
+      function formatDateTime(value) {
+        return new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(value));
+      }
+      function movementRow(movement, includeReason) {
+        const vehicle = vehicleById(movement.vehicleId);
+        if (!vehicle) return '';
+        if (includeReason) {
+          const overdue = movementOverdue(movement);
+          const status = movement.status === 'pending' ? `<span class="status ${overdue ? 'status-danger' : 'status-warn'}">${overdue ? 'Atrasado' : 'Aguardando'}</span>` : '<span class="status status-ok">Recebido</span>';
+          const action = movement.status === 'pending' ? `<button class="button button-small button-secondary" data-confirm-receipt="${escapeAttr(movement.id)}">Confirmar recebimento</button>` : `<span class="table-secondary">${escapeHtml(movement.receivedBy || 'Confirmado')}${movement.receivedAt ? `<br>${formatDateTime(movement.receivedAt)}` : ''}</span>`;
+          return `<tr><td>${formatDate(movement.date)}</td><td><span class="plate">${escapeHtml(vehicle.plate)}</span><div class="table-secondary">${escapeHtml(vehicleDisplayName(vehicle))}</div></td><td>${escapeHtml(movement.origin)}</td><td>${escapeHtml(movement.destination)}</td><td>${escapeHtml(movement.person)}</td><td>${escapeHtml(movement.receiver || 'Não informado')}</td><td>${status}</td><td>${action}</td></tr>`;
+        }
+        return `<tr><td><span class="table-primary">${escapeHtml(vehicle.plate)}</span><div class="table-secondary">${escapeHtml(vehicleDisplayName(vehicle))}</div></td><td>${escapeHtml(movement.origin)} <span aria-label="para">→</span> ${escapeHtml(movement.destination)}</td><td>${escapeHtml(movement.person)}</td><td>${formatDate(movement.date)}</td></tr>`;
+      }
+      function renderMovements() {
+        const sorted = [...data.movements].sort((a, b) => b.date.localeCompare(a.date));
+        document.getElementById('recent-movements').innerHTML = sorted.slice(0, 5).map(movement => movementRow(movement, false)).join('') || '<tr><td colspan="4" class="empty-state">Nenhuma movimentação registrada.</td></tr>';
+        document.getElementById('movement-table').innerHTML = sorted.map(movement => movementRow(movement, true)).join('') || '<tr><td colspan="8" class="empty-state">Nenhuma movimentação registrada.</td></tr>';
+      }
+      function pendingMovementDescription(movement) {
+        const vehicle = vehicleById(movement.vehicleId);
+        if (!vehicle) return '';
+        const overdue = movementOverdue(movement);
+        const hours = Math.max(0, Math.floor((Date.now() - Date.parse(movement.createdAt)) / 3600000));
+        const detail = overdue ? `Pendente há ${hours} hora(s) · ${movement.receiver}` : `Aguardando ${movement.receiver} confirmar · ${movement.destination}`;
+        return `<div class="alert-row"><span class="alert-mark ${overdue ? 'urgent' : ''}"></span><div class="alert-content"><div class="alert-title">${escapeHtml(vehicle.plate)} · ${escapeHtml(vehicleDisplayName(vehicle))}${overdue ? ' · Atrasado' : ''}</div><div class="alert-detail">${escapeHtml(detail)}</div><button class="button button-small button-secondary" data-confirm-receipt="${escapeAttr(movement.id)}">Confirmar recebimento</button></div></div>`;
+      }
+      function renderPendingReceipts() {
+        const pending = data.movements.filter(movement => movement.status === 'pending').sort((a, b) => Date.parse(a.createdAt) - Date.parse(b.createdAt));
+        document.getElementById('pending-receipts').innerHTML = pending.length ? pending.slice(0, 6).map(pendingMovementDescription).join('') : '<div class="alert-empty">Nenhum veículo aguardando confirmação de recebimento.</div>';
+        const badge = document.getElementById('nav-movement-count');
+        badge.textContent = pending.length;
+        badge.classList.toggle('hidden', pending.length === 0);
+      }
+      function alertDescription(vehicle) {
+        const status = reviewStatus(vehicle);
+        return `<div class="alert-row"><span class="alert-mark ${status.urgency === 0 ? 'urgent' : ''}"></span><div><div class="alert-title">${escapeHtml(vehicle.plate)} · ${escapeHtml(vehicleDisplayName(vehicle))}</div><div class="alert-detail">${escapeHtml(vehicle.unit)} · ${escapeHtml(reviewDetail(vehicle))}</div></div></div>`;
+      }
+      function renderAlerts() {
+        const alerts = data.vehicles.filter(vehicle => reviewStatus(vehicle).urgency < 2).sort((a, b) => reviewStatus(a).urgency - reviewStatus(b).urgency || (daysUntil(a.nextDate) ?? 9999) - (daysUntil(b.nextDate) ?? 9999));
+        const alertList = document.getElementById('dashboard-alerts');
+        alertList.innerHTML = alerts.length ? alerts.slice(0, 6).map(alertDescription).join('') : '<div class="alert-empty">Nenhuma revisão próxima. A frota está em dia com os prazos cadastrados.</div>';
+        const count = alerts.length;
+        const badge = document.getElementById('nav-alert-count');
+        badge.textContent = count;
+        badge.classList.toggle('hidden', count === 0);
+      }
+      function licensingAlertDescription(vehicle) {
+        const status = licensingStatus(vehicle);
+        return `<div class="alert-row"><span class="alert-mark ${status.urgency === 0 ? 'urgent' : ''}"></span><div class="alert-content"><div class="alert-title">${escapeHtml(vehicle.plate)} · ${escapeHtml(vehicleDisplayName(vehicle))} · ${status.label}</div><div class="alert-detail">${escapeHtml(vehicle.unit)} · ${escapeHtml(status.detail)}${vehicle.licenseDueDate ? ` · ${formatDate(vehicle.licenseDueDate)}` : ''}</div><button class="button button-small button-secondary" data-update-license="${escapeAttr(vehicle.id)}">Atualizar vencimento</button></div></div>`;
+      }
+      function renderLicensingAlerts() {
+        const vehicles = data.vehicles.filter(vehicle => licensingStatus(vehicle).urgency < 2).sort((a, b) => licensingStatus(a).urgency - licensingStatus(b).urgency || (daysUntil(a.licenseDueDate) ?? -1) - (daysUntil(b.licenseDueDate) ?? -1));
+        document.getElementById('dashboard-licensing-alerts').innerHTML = vehicles.length ? vehicles.slice(0, 5).map(licensingAlertDescription).join('') : '<div class="alert-empty">Nenhum licenciamento exige atenção.</div>';
+        const badge = document.getElementById('nav-license-count');
+        badge.textContent = vehicles.length;
+        badge.classList.toggle('hidden', vehicles.length === 0);
+      }
+      function insuranceAlertDescription(vehicle) {
+        const status = insuranceStatus(vehicle);
+        const insurer = vehicle.insurer ? ` · ${vehicle.insurer}` : '';
+        const dueDate = vehicle.insuranceDueDate ? ` · ${formatDate(vehicle.insuranceDueDate)}` : '';
+        return `<div class="alert-row"><span class="alert-mark ${status.urgency === 0 ? 'urgent' : ''}"></span><div class="alert-content"><div class="alert-title">${escapeHtml(vehicle.plate)} · ${status.label}</div><div class="alert-detail">${escapeHtml(status.detail)}${insurer}${dueDate}</div><button class="button button-small button-secondary" data-update-insurance="${escapeAttr(vehicle.id)}">Atualizar seguro</button></div></div>`;
+      }
+      function renderInsuranceAlerts() {
+        const vehicles = data.vehicles.filter(vehicle => insuranceStatus(vehicle).urgency < 2).sort((a, b) => insuranceStatus(a).urgency - insuranceStatus(b).urgency || (daysUntil(a.insuranceDueDate) ?? -1) - (daysUntil(b.insuranceDueDate) ?? -1));
+        document.getElementById('dashboard-insurance-alerts').innerHTML = vehicles.length ? vehicles.slice(0, 5).map(insuranceAlertDescription).join('') : '<div class="alert-empty">Nenhum seguro exige atenção.</div>';
+        const badge = document.getElementById('nav-insurance-count');
+        badge.textContent = vehicles.length;
+        badge.classList.toggle('hidden', vehicles.length === 0);
+      }
+      function vehicleRow(vehicle) {
+        const status = reviewStatus(vehicle);
+        const readingLabel = vehicle.kmUpdatedAt ? `${vehicle.kmSource === 'integration' ? 'Integração' : 'Manual'} · ${formatDate(vehicle.kmUpdatedAt)}` : 'Leitura inicial';
+        const vehicleYears = vehicle.manufactureYear && vehicle.modelYear ? `${vehicle.manufactureYear}/${vehicle.modelYear}` : 'Anos não informados';
+        const registration = [vehicle.renavam ? `RENAVAM ${vehicle.renavam}` : '', vehicle.chassis ? `Chassi ${vehicle.chassis}` : ''].filter(Boolean).join(' · ');
+        return `<tr><td>${escapeHtml(vehicle.fleetNumber || '—')}</td><td><span class="table-primary">${escapeHtml(vehicleDisplayName(vehicle))}</span><div class="table-secondary">${vehicleYears}${registration ? ` · ${escapeHtml(registration)}` : ''}</div></td><td><span class="plate">${escapeHtml(vehicle.plate)}</span></td><td>${escapeHtml(vehicle.unit)}</td><td>${formatKm(vehicle.km)}<div class="table-secondary">${readingLabel}</div></td><td>${formatDate(vehicle.nextDate)}<div class="table-secondary">${vehicle.nextKm ? `ou ${formatKm(vehicle.nextKm)}` : 'Por data'}</div></td><td><span class="status ${status.className}">${status.label}</span></td><td><button class="button button-small button-secondary" data-update-odometer="${escapeAttr(vehicle.id)}" title="Registrar nova leitura"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19a8 8 0 1 1 16 0"/><path d="m12 13 4-4M7 19h10"/></svg>Atualizar km</button> <button class="button button-small button-secondary" data-edit-vehicle="${escapeAttr(vehicle.id)}">Editar dados</button> <button class="icon-button icon-danger" data-delete-vehicle="${escapeAttr(vehicle.id)}" aria-label="Apagar veículo ${escapeAttr(vehicle.plate)}" title="Apagar somente este veículo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 6h18M8 6V4h8v2m3 0-.8 14H5.8L5 6m4 4v6m6-6v6"/></svg></button></td></tr>`;
+      }
+      function renderVehicles() {
+        const query = document.getElementById('vehicle-search').value.trim().toLocaleLowerCase('pt-BR');
+        const unit = document.getElementById('vehicle-filter').value;
+        const filtered = data.vehicles.filter(vehicle => (!unit || vehicle.unit === unit) && `${vehicle.fleetNumber || ''} ${vehicle.plate} ${vehicleDisplayName(vehicle)} ${vehicle.unit} ${vehicle.renavam || ''} ${vehicle.chassis || ''}`.toLocaleLowerCase('pt-BR').includes(query));
+        document.getElementById('vehicle-table').innerHTML = filtered.map(vehicleRow).join('') || '<tr><td colspan="8" class="empty-state">Nenhum veículo encontrado.</td></tr>';
+        document.getElementById('vehicle-total').textContent = `${filtered.length} ${filtered.length === 1 ? 'veículo' : 'veículos'}`;
+        const units = [...new Set(data.vehicles.map(vehicle => vehicle.unit))].sort((a, b) => a.localeCompare(b, 'pt-BR'));
+        const filter = document.getElementById('vehicle-filter');
+        const previous = filter.value;
+        filter.innerHTML = '<option value="">Todas as unidades</option>' + units.map(value => `<option value="${escapeAttr(value)}">${escapeHtml(value)}</option>`).join('');
+        filter.value = units.includes(previous) ? previous : '';
+        document.getElementById('unit-options').innerHTML = units.map(value => `<option value="${escapeAttr(value)}"></option>`).join('');
+      }
+      function renderMaintenance() {
+        const sorted = [...data.vehicles].sort((a, b) => reviewStatus(a).urgency - reviewStatus(b).urgency || (daysUntil(a.nextDate) ?? 9999) - (daysUntil(b.nextDate) ?? 9999));
+        document.getElementById('maintenance-table').innerHTML = sorted.map(vehicle => {
+          const status = reviewStatus(vehicle);
+          return `<tr><td><span class="table-primary">${escapeHtml(vehicle.plate)}</span><div class="table-secondary">${escapeHtml(vehicleDisplayName(vehicle))}</div></td><td>${escapeHtml(vehicle.unit)}</td><td>${formatDate(vehicle.nextDate)}</td><td>${vehicle.nextKm ? formatKm(vehicle.nextKm) : 'Não informada'}<div class="table-secondary">${vehicle.nextKm ? reviewDetail({ ...vehicle, nextDate: null }) : 'Por data'}</div></td><td><span class="status ${status.className}">${status.label}</span></td></tr>`;
+        }).join('') || '<tr><td colspan="5" class="empty-state">Cadastre um veículo para acompanhar as revisões.</td></tr>';
+        document.getElementById('maintenance-total').textContent = `${data.vehicles.length} ${data.vehicles.length === 1 ? 'veículo' : 'veículos'}`;
+      }
+      function renderLicensing() {
+        const sorted = [...data.vehicles].sort((a, b) => licensingStatus(a).urgency - licensingStatus(b).urgency || (daysUntil(a.licenseDueDate) ?? -1) - (daysUntil(b.licenseDueDate) ?? -1));
+        document.getElementById('licensing-table').innerHTML = sorted.map(vehicle => {
+          const status = licensingStatus(vehicle);
+          return `<tr><td><span class="table-primary">${escapeHtml(vehicle.plate)}</span><div class="table-secondary">${escapeHtml(vehicleDisplayName(vehicle))}</div></td><td>${escapeHtml(vehicle.unit)}</td><td>${formatDate(vehicle.licenseDueDate)}<div class="table-secondary">${escapeHtml(status.detail)}</div></td><td><span class="status ${status.className}">${status.label}</span></td><td><button class="button button-small button-secondary" data-update-license="${escapeAttr(vehicle.id)}">Atualizar data</button></td></tr>`;
+        }).join('') || '<tr><td colspan="5" class="empty-state">Cadastre um veículo para controlar o licenciamento.</td></tr>';
+        document.getElementById('licensing-total').textContent = `${data.vehicles.length} ${data.vehicles.length === 1 ? 'veículo' : 'veículos'}`;
+      }
+      function renderInsurance() {
+        const sorted = [...data.vehicles].sort((a, b) => insuranceStatus(a).urgency - insuranceStatus(b).urgency || (daysUntil(a.insuranceDueDate) ?? -1) - (daysUntil(b.insuranceDueDate) ?? -1));
+        document.getElementById('insurance-table').innerHTML = sorted.map(vehicle => {
+          const status = insuranceStatus(vehicle);
+          return `<tr><td><span class="table-primary">${escapeHtml(vehicle.plate)}</span><div class="table-secondary">${escapeHtml(vehicleDisplayName(vehicle))}</div></td><td>${escapeHtml(vehicle.insurancePolicy || 'Não informada')}</td><td>${escapeHtml(vehicle.insurer || 'Não informada')}</td><td>${formatDate(vehicle.insuranceContractDate)}</td><td>${formatDate(vehicle.insuranceDueDate)}<div class="table-secondary">${escapeHtml(status.detail)}</div></td><td><span class="status ${status.className}">${status.label}</span></td><td><button class="button button-small button-secondary" data-update-insurance="${escapeAttr(vehicle.id)}">Atualizar</button></td></tr>`;
+        }).join('') || '<tr><td colspan="7" class="empty-state">Cadastre um veículo para controlar o seguro.</td></tr>';
+        document.getElementById('insurance-total').textContent = `${data.vehicles.length} ${data.vehicles.length === 1 ? 'veículo' : 'veículos'}`;
+      }
+      function incidentStatusInfo(incident) {
+        const statusMap = {
+          open: { label: 'Aberto', className: 'status-danger' },
+          in_progress: { label: 'Em andamento', className: 'status-warn' },
+          resolved: { label: 'Resolvido', className: 'status-ok' }
+        };
+        return statusMap[incident.status] || statusMap.open;
+      }
+      function incidentSeverityInfo(incident) {
+        const severityMap = {
+          low: { label: 'Baixa' },
+          medium: { label: 'Média' },
+          high: { label: 'Alta' }
+        };
+        return severityMap[incident.severity] || { label: 'Média' };
+      }
+      function renderIncidents() {
+        const incidents = [...(data.incidents || [])].sort((a, b) => b.date.localeCompare(a.date));
+        document.getElementById('incident-table').innerHTML = incidents.map(incident => {
+          const vehicle = vehicleById(incident.vehicleId);
+          const status = incidentStatusInfo(incident);
+          const severity = incidentSeverityInfo(incident);
+          const value = Number(incident.cost || 0);
+          return `<tr><td><span class="table-primary">${escapeHtml(vehicle?.plate || 'Veículo removido')}</span><div class="table-secondary">${escapeHtml(vehicle ? vehicleDisplayName(vehicle) : 'Veículo não encontrado')}</div></td><td>${escapeHtml(incident.type || 'Sinistro')}</td><td>${formatDate(incident.date)}</td><td>${escapeHtml(incident.responsible || 'Não informado')}</td><td>${severity.label}</td><td><span class="status ${status.className}">${status.label}</span></td><td>${Number.isFinite(value) ? `R$ ${value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : 'R$ 0,00'}</td></tr>`;
+        }).join('') || '<tr><td colspan="7" class="empty-state">Nenhum sinistro registrado.</td></tr>';
+        document.getElementById('incident-total').textContent = `${incidents.length} ${incidents.length === 1 ? 'sinistro' : 'sinistros'}`;
+        const badge = document.getElementById('nav-incident-count');
+        const openIncidents = incidents.filter(item => item.status !== 'resolved').length;
+        badge.textContent = openIncidents;
+        badge.classList.toggle('hidden', openIncidents === 0);
+      }
+      async function renderUsers() {
+        try {
+          const result = await apiRequest('/api/users');
+          userCache = result.users;
+          document.getElementById('users-table').innerHTML = userCache.map(user => `<tr><td><span class="table-primary">${escapeHtml(user.username)}</span></td><td>${user.role === 'admin' ? 'Administrador' : 'Usuário'}</td><td>${formatDate(user.createdAt.slice(0, 10))}</td><td><span class="status ${user.active ? 'status-ok' : 'status-neutral'}">${user.active ? 'Ativo' : 'Desativado'}</span></td><td><div class="user-table-actions"><button class="button button-small button-secondary" data-reset-user="${escapeAttr(user.id)}">Redefinir senha</button>${user.id !== currentUser.id && user.active ? `<button class="button button-small button-danger" data-deactivate-user="${escapeAttr(user.id)}">Desativar</button>` : ''}${!user.active ? `<button class="button button-small button-secondary" data-activate-user="${escapeAttr(user.id)}">Reativar</button>` : ''}</div></td></tr>`).join('') || '<tr><td colspan="5" class="empty-state">Nenhum usuário cadastrado.</td></tr>';
+        } catch (error) {
+          showToast(error.message);
+        }
+      }
+      function openUserDialog(user = null) {
+        const form = document.getElementById('user-form');
+        form.reset();
+        const error = document.getElementById('user-error');
+        error.textContent = '';
+        error.classList.add('hidden');
+        form.elements.userId.value = user?.id || '';
+        form.elements.username.value = user?.username || '';
+        form.elements.username.readOnly = Boolean(user);
+        form.elements.role.value = user?.role || 'member';
+        document.getElementById('user-role-field').classList.toggle('hidden', Boolean(user));
+        document.getElementById('user-dialog-title').textContent = user ? 'Redefinir senha' : 'Criar usuário';
+        document.getElementById('user-dialog-description').textContent = user ? `Defina uma nova senha para ${user.username}. A sessão atual dessa conta será encerrada.` : 'A nova conta terá acesso compartilhado à frota.';
+        document.getElementById('user-form-submit').textContent = user ? 'Salvar nova senha' : 'Criar conta';
+        document.getElementById('user-dialog').showModal();
+      }
+      function render() {
+        renderMetrics();
+        renderUnitSummary();
+        renderMovements();
+        renderPendingReceipts();
+        renderAlerts();
+        renderLicensingAlerts();
+        renderInsuranceAlerts();
+        renderVehicles();
+        renderMaintenance();
+        renderLicensing();
+        renderInsurance();
+        renderIncidents();
+      }
+      function openIncidentDialog() {
+        const form = document.getElementById('incident-form');
+        form.reset();
+        const vehicleSelect = document.getElementById('incident-vehicle');
+        vehicleSelect.innerHTML = data.vehicles.map(vehicle => `<option value="${escapeAttr(vehicle.id)}">${escapeHtml(vehicle.plate)} · ${escapeHtml(vehicleDisplayName(vehicle))}</option>`).join('') || '<option value="">Nenhum veículo cadastrado</option>';
+        if (!data.vehicles.length) { showToast('Cadastre pelo menos um veículo antes de registrar um sinistro.'); return; }
+        document.getElementById('incident-dialog').showModal();
+      }
+      function openMovementDialog() {
+        const availableVehicles = data.vehicles.filter(vehicle => !data.movements.some(movement => movement.vehicleId === vehicle.id && movement.status === 'pending'));
+        if (!availableVehicles.length) { showToast(data.vehicles.length ? 'Todos os veículos têm uma transferência aguardando recebimento.' : 'Cadastre um veículo antes de registrar uma movimentação.'); return; }
+        const select = document.getElementById('movement-vehicle');
+        select.innerHTML = availableVehicles.map(vehicle => `<option value="${escapeAttr(vehicle.id)}">${escapeHtml(vehicle.plate)} · ${escapeHtml(vehicleDisplayName(vehicle))} (${escapeHtml(vehicle.unit)})</option>`).join('');
+        document.getElementById('movement-date').value = isoToday;
+        updateMovementOrigin();
+        document.getElementById('movement-dialog').showModal();
+      }
+      function updateMovementOrigin() {
+        const vehicle = vehicleById(document.getElementById('movement-vehicle').value);
+        document.getElementById('movement-origin').value = vehicle ? vehicle.unit : '';
+      }
+      function openVehicleDialog(vehicle = null) {
+        const form = document.getElementById('vehicle-form');
+        const fleetNumberInput = document.getElementById('vehicle-fleet-number');
+        form.reset();
+        form.elements.vehicleId.value = vehicle?.id || '';
+        fleetNumberInput.disabled = false;
+        fleetNumberInput.value = String(vehicle?.fleetNumber ?? '');
+        form.elements.plate.value = vehicle?.plate || '';
+        form.elements.make.value = vehicle?.make || '';
+        form.elements.model.value = vehicle?.model || '';
+        form.elements.renavam.value = vehicle?.renavam || '';
+        form.elements.chassis.value = vehicle?.chassis || '';
+        form.elements.manufactureYear.value = vehicle?.manufactureYear || '';
+        form.elements.modelYear.value = vehicle?.modelYear || '';
+        form.elements.unit.value = vehicle?.unit || '';
+        form.elements.km.value = vehicle?.km ?? '';
+        form.elements.km.disabled = Boolean(vehicle);
+        form.elements.nextDate.value = vehicle?.nextDate || '';
+        form.elements.nextKm.value = vehicle?.nextKm || '';
+        form.elements.licenseDueDate.value = vehicle?.licenseDueDate || '';
+        form.elements.insurancePolicy.value = vehicle?.insurancePolicy || '';
+        form.elements.insurer.value = vehicle?.insurer || '';
+        form.elements.insuranceContractDate.value = vehicle?.insuranceContractDate || '';
+        form.elements.insuranceDueDate.value = vehicle?.insuranceDueDate || '';
+        document.getElementById('vehicle-dialog-title').textContent = vehicle ? 'Editar dados do veículo' : 'Adicionar veículo';
+        document.getElementById('vehicle-dialog-description').textContent = vehicle ? 'Atualize os dados cadastrados. Para alterar a quilometragem, use a ação própria na lista.' : 'Inclua o veículo e os dados da próxima revisão.';
+        document.getElementById('vehicle-submit').textContent = vehicle ? 'Salvar alterações' : 'Salvar veículo';
+        document.getElementById('vehicle-dialog').showModal();
+      }
+      function openMaintenanceDialog() {
+        if (!data.vehicles.length) { showToast('Cadastre um veículo antes de agendar uma revisão.'); return; }
+        const select = document.getElementById('maintenance-vehicle');
+        select.innerHTML = data.vehicles.map(vehicle => `<option value="${escapeAttr(vehicle.id)}">${escapeHtml(vehicle.plate)} · ${escapeHtml(vehicleDisplayName(vehicle))}</option>`).join('');
+        select.value = data.vehicles[0].id;
+        fillMaintenanceFields();
+        document.getElementById('maintenance-dialog').showModal();
+      }
+      function fillMaintenanceFields() {
+        const vehicle = vehicleById(document.getElementById('maintenance-vehicle').value);
+        document.getElementById('maintenance-date').value = vehicle?.nextDate || '';
+        document.getElementById('maintenance-km').value = vehicle?.nextKm || '';
+      }
+      function openLicensingDialog(vehicleId) {
+        if (!data.vehicles.length) { showToast('Cadastre um veículo antes de atualizar o licenciamento.'); return; }
+        const select = document.getElementById('licensing-vehicle');
+        select.innerHTML = data.vehicles.map(vehicle => `<option value="${escapeAttr(vehicle.id)}">${escapeHtml(vehicle.plate)} · ${escapeHtml(vehicleDisplayName(vehicle))}</option>`).join('');
+        select.value = vehicleId || data.vehicles[0].id;
+        document.getElementById('licensing-date').value = vehicleById(select.value)?.licenseDueDate || '';
+        document.getElementById('licensing-dialog').showModal();
+      }
+      function openInsuranceDialog(vehicleId) {
+        if (!data.vehicles.length) { showToast('Cadastre um veículo antes de lançar o seguro.'); return; }
+        const select = document.getElementById('insurance-vehicle');
+        select.innerHTML = data.vehicles.map(vehicle => `<option value="${escapeAttr(vehicle.id)}">${escapeHtml(vehicle.plate)} · ${escapeHtml(vehicleDisplayName(vehicle))}</option>`).join('');
+        select.value = vehicleId || data.vehicles[0].id;
+        fillInsuranceFields();
+        document.getElementById('insurance-dialog').showModal();
+      }
+      function fillInsuranceFields() {
+        const vehicle = vehicleById(document.getElementById('insurance-vehicle').value);
+        document.getElementById('insurance-policy').value = vehicle?.insurancePolicy || '';
+        document.getElementById('insurance-provider').value = vehicle?.insurer || '';
+        document.getElementById('insurance-contract-date').value = vehicle?.insuranceContractDate || '';
+        document.getElementById('insurance-due-date').value = vehicle?.insuranceDueDate || '';
+      }
+      function openOdometerDialog(vehicleId) {
+        const select = document.getElementById('odometer-vehicle');
+        select.innerHTML = data.vehicles.map(vehicle => `<option value="${escapeAttr(vehicle.id)}">${escapeHtml(vehicle.plate)} · ${escapeHtml(vehicleDisplayName(vehicle))}</option>`).join('');
+        select.value = vehicleId;
+        document.getElementById('odometer-date').value = isoToday;
+        document.getElementById('odometer-date').max = isoToday;
+        updateOdometerContext();
+        document.getElementById('odometer-dialog').showModal();
+      }
+      function updateOdometerContext() {
+        const vehicle = vehicleById(document.getElementById('odometer-vehicle').value);
+        const currentInput = document.getElementById('odometer-current');
+        const newReadingInput = document.getElementById('odometer-km');
+        currentInput.value = vehicle ? formatKm(vehicle.km) : '';
+        newReadingInput.min = vehicle ? vehicle.km : 0;
+        newReadingInput.value = '';
+        const readings = data.odometerReadings.filter(reading => reading.vehicleId === vehicle?.id).sort((a, b) => Date.parse(b.recordedAt) - Date.parse(a.recordedAt)).slice(0, 3);
+        document.getElementById('odometer-history').textContent = readings.length
+          ? `Últimas leituras: ${readings.map(reading => `${formatKm(reading.km)} em ${formatDate(reading.readingDate)} · ${reading.source === 'integration' ? 'integração' : reading.responsible}`).join(' | ')}`
+          : 'As leituras serão salvas no histórico do veículo.';
+      }
+
+      document.querySelectorAll('.nav-button').forEach(button => button.addEventListener('click', () => showView(button.dataset.view)));
+      document.querySelectorAll('[data-go]').forEach(button => button.addEventListener('click', () => showView(button.dataset.go)));
+      document.querySelectorAll('[data-action="new-vehicle"]').forEach(button => button.addEventListener('click', () => openVehicleDialog()));
+      document.querySelector('[data-action="clear-fleet"]').addEventListener('click', () => {
+        if (!data.vehicles.length && !data.movements.length) { showToast('A frota já está vazia.'); return; }
+        const confirmed = window.confirm('Apagar todos os veículos, movimentações e sinistros? Esta ação não pode ser desfeita.');
+        if (!confirmed) return;
+        data = { vehicles: [], movements: [], odometerReadings: [], incidents: [] };
+        saveData();
+        render();
+        showToast('Frota e histórico apagados. Cadastre seus veículos para começar.');
+      });
+      document.querySelectorAll('[data-action="new-movement"]').forEach(button => button.addEventListener('click', openMovementDialog));
+      document.querySelectorAll('[data-action="new-maintenance"]').forEach(button => button.addEventListener('click', openMaintenanceDialog));
+      document.querySelectorAll('[data-action="new-licensing"]').forEach(button => button.addEventListener('click', () => openLicensingDialog()));
+      document.querySelectorAll('[data-action="new-insurance"]').forEach(button => button.addEventListener('click', () => openInsuranceDialog()));
+      document.querySelectorAll('[data-action="logout"]').forEach(button => button.addEventListener('click', logout));
+      document.querySelectorAll('[data-action="new-user"]').forEach(button => button.addEventListener('click', () => openUserDialog()));
+      document.querySelectorAll('[data-action="new-incident"]').forEach(button => button.addEventListener('click', () => openIncidentDialog()));
+      document.getElementById('request-access-open').addEventListener('click', () => {
+        const form = document.getElementById('access-request-form');
+        form.reset();
+        document.getElementById('access-request-error').classList.add('hidden');
+        document.getElementById('access-request-success').classList.add('hidden');
+        document.getElementById('access-request-dialog').showModal();
+      });
+      document.getElementById('show-access-requests').addEventListener('click', async () => {
+        try {
+          await refreshAccessRequests();
+          document.getElementById('access-requests-dialog').showModal();
+        } catch (error) {
+          showToast(error.message);
+        }
+      });
+      document.getElementById('bootstrap-form').addEventListener('submit', event => submitAuthentication(event, '/api/setup'));
+      document.getElementById('login-form').addEventListener('submit', event => submitAuthentication(event, '/api/login'));
+      document.getElementById('access-request-form').addEventListener('submit', async event => {
+        event.preventDefault();
+        const form = event.currentTarget;
+        const formData = new FormData(form);
+        const errorElement = document.getElementById('access-request-error');
+        const successElement = document.getElementById('access-request-success');
+        const submitButton = document.getElementById('access-request-submit');
+        errorElement.textContent = '';
+        errorElement.classList.add('hidden');
+        successElement.classList.add('hidden');
+        const password = String(formData.get('password'));
+        if (password !== String(formData.get('passwordConfirm'))) {
+          errorElement.textContent = 'As senhas não coincidem.';
+          errorElement.classList.remove('hidden');
+          return;
+        }
+        submitButton.disabled = true;
+        try {
+          await apiRequest('/api/access-requests', {
+            method: 'POST',
+            body: JSON.stringify({ email: String(formData.get('email')).trim(), password })
+          });
+          form.reset();
+          successElement.classList.remove('hidden');
+        } catch (error) {
+          errorElement.textContent = error.message;
+          errorElement.classList.remove('hidden');
+        } finally {
+          submitButton.disabled = false;
+        }
+      });
+      document.getElementById('user-form').addEventListener('submit', async event => {
+        event.preventDefault();
+        const userForm = event.currentTarget;
+        const form = new FormData(userForm);
+        const errorElement = document.getElementById('user-error');
+        errorElement.textContent = '';
+        errorElement.classList.add('hidden');
+        const userId = String(form.get('userId'));
+        const password = String(form.get('password'));
+        const isPasswordReset = Boolean(userId);
+        try {
+          const result = await apiRequest(isPasswordReset ? `/api/users/${encodeURIComponent(userId)}/password` : '/api/users', {
+            method: isPasswordReset ? 'PUT' : 'POST',
+            body: JSON.stringify({ username: String(form.get('username')).trim(), password, role: String(form.get('role')) })
+          });
+          document.getElementById('user-dialog').close();
+          userForm.reset();
+          if (isPasswordReset && userId === currentUser.id) {
+            await logout();
+            showToast('Senha redefinida. Entre com a nova senha.');
+            return;
+          }
+          showToast(isPasswordReset ? 'Senha redefinida. A conta precisará entrar novamente.' : `Usuário ${result.user.username} criado.`);
+          await renderUsers();
+        } catch (error) {
+          errorElement.textContent = error.message;
+          errorElement.classList.remove('hidden');
+        }
+      });
+      document.getElementById('user-form').addEventListener('invalid', event => {
+        const errorElement = document.getElementById('user-error');
+        errorElement.textContent = event.target.validationMessage;
+        errorElement.classList.remove('hidden');
+      }, true);
+      document.querySelectorAll('[data-close]').forEach(button => button.addEventListener('click', () => document.getElementById(button.dataset.close).close()));
+      document.getElementById('movement-vehicle').addEventListener('change', updateMovementOrigin);
+      document.getElementById('maintenance-vehicle').addEventListener('change', fillMaintenanceFields);
+      document.getElementById('odometer-vehicle').addEventListener('change', updateOdometerContext);
+      document.getElementById('licensing-vehicle').addEventListener('change', event => {
+        document.getElementById('licensing-date').value = vehicleById(event.currentTarget.value)?.licenseDueDate || '';
+      });
+      document.getElementById('insurance-vehicle').addEventListener('change', fillInsuranceFields);
+      document.addEventListener('click', event => {
+        const requestAction = event.target.closest('[data-access-request-action]');
+        if (requestAction) {
+          const { accessRequestAction: action, accessRequestId: requestId } = requestAction.dataset;
+          const requestPath = `/api/access-requests/${encodeURIComponent(requestId)}/${action}`;
+          apiRequest(requestPath, { method: action === 'approve' ? 'POST' : 'DELETE', body: '{}' })
+            .then(async result => {
+              await refreshAccessRequests();
+              if (action === 'approve') await renderUsers();
+              showToast(action === 'approve' ? `Acesso aprovado para ${result.user.username}.` : 'Solicitação recusada.');
+            })
+            .catch(error => showToast(error.message));
+          return;
+        }
+        const resetUserButton = event.target.closest('[data-reset-user]');
+        if (resetUserButton) {
+          openUserDialog(userCache.find(user => user.id === resetUserButton.dataset.resetUser));
+          return;
+        }
+        const accountAction = event.target.closest('[data-deactivate-user], [data-activate-user]');
+        if (accountAction) {
+          const userId = accountAction.dataset.deactivateUser || accountAction.dataset.activateUser;
+          const active = Boolean(accountAction.dataset.activateUser);
+          const user = userCache.find(item => item.id === userId);
+          if (!user) return;
+          if (!active && !window.confirm(`Desativar a conta de ${user.username}? As sessões abertas serão encerradas.`)) return;
+          apiRequest(`/api/users/${encodeURIComponent(userId)}/active`, { method: 'PATCH', body: JSON.stringify({ active }) })
+            .then(renderUsers)
+            .then(() => showToast(active ? `Conta ${user.username} reativada.` : `Conta ${user.username} desativada.`))
+            .catch(error => showToast(error.message));
+          return;
+        }
+        const updateInsuranceButton = event.target.closest('[data-update-insurance]');
+        if (updateInsuranceButton) {
+          openInsuranceDialog(updateInsuranceButton.dataset.updateInsurance);
+          return;
+        }
+        const updateLicenseButton = event.target.closest('[data-update-license]');
+        if (updateLicenseButton) {
+          openLicensingDialog(updateLicenseButton.dataset.updateLicense);
+          return;
+        }
+        const updateOdometerButton = event.target.closest('[data-update-odometer]');
+        if (updateOdometerButton) {
+          openOdometerDialog(updateOdometerButton.dataset.updateOdometer);
+          return;
+        }
+        const editVehicleButton = event.target.closest('[data-edit-vehicle]');
+        if (editVehicleButton) {
+          const vehicle = vehicleById(editVehicleButton.dataset.editVehicle);
+          if (vehicle) openVehicleDialog(vehicle);
+          return;
+        }
+        const deleteButton = event.target.closest('[data-delete-vehicle]');
+        if (deleteButton) {
+          const vehicle = vehicleById(deleteButton.dataset.deleteVehicle);
+          if (!vehicle) return;
+          const linkedMovements = data.movements.filter(movement => movement.vehicleId === vehicle.id).length;
+          const historyText = linkedMovements ? ` e ${linkedMovements} movimentação(ões) do histórico` : '';
+          const confirmed = window.confirm(`Apagar somente o veículo ${vehicle.plate}${historyText}? Esta ação não pode ser desfeita.`);
+          if (!confirmed) return;
+          data.vehicles = data.vehicles.filter(item => item.id !== vehicle.id);
+          data.movements = data.movements.filter(movement => movement.vehicleId !== vehicle.id);
+          data.odometerReadings = data.odometerReadings.filter(reading => reading.vehicleId !== vehicle.id);
+          data.incidents = (data.incidents || []).filter(incident => incident.vehicleId !== vehicle.id);
+          saveData();
+          render();
+          showToast(`Veículo ${vehicle.plate} apagado.`);
+          return;
+        }
+        const button = event.target.closest('[data-confirm-receipt]');
+        if (!button) return;
+        const movement = data.movements.find(item => item.id === button.dataset.confirmReceipt);
+        if (!movement || movement.status !== 'pending') return;
+        const plate = vehicleById(movement.vehicleId)?.plate || 'o veículo';
+        const receivedBy = window.prompt(`Nome de quem recebeu ${plate}:`, movement.receiver);
+        if (receivedBy === null) return;
+        if (!receivedBy.trim()) { showToast('Informe o nome de quem recebeu o veículo.'); return; }
+        movement.status = 'received';
+        movement.receivedBy = receivedBy.trim();
+        movement.receivedAt = new Date().toISOString();
+        const vehicle = vehicleById(movement.vehicleId);
+        if (vehicle) vehicle.unit = movement.destination;
+        saveData();
+        render();
+        showToast('Recebimento confirmado e unidade do veículo atualizada.');
+      });
+      document.getElementById('vehicle-search').addEventListener('input', renderVehicles);
+      document.getElementById('vehicle-filter').addEventListener('change', renderVehicles);
+
+      document.getElementById('vehicle-form').addEventListener('submit', async event => {
+        event.preventDefault();
+        const formElement = event.currentTarget;
+        const form = new FormData(formElement);
+        const vehicleId = String(form.get('vehicleId'));
+        const existingVehicle = vehicleId ? vehicleById(vehicleId) : null;
+        if (vehicleId && !existingVehicle) { showToast('O veículo que você tentou editar não foi encontrado.'); return; }
+        const fleetNumber = document.getElementById('vehicle-fleet-number').value.trim();
+        const plate = String(form.get('plate')).trim().toUpperCase();
+        const make = String(form.get('make')).trim();
+        const model = String(form.get('model')).trim();
+        const renavam = String(form.get('renavam')).trim();
+        const chassis = String(form.get('chassis')).trim().toUpperCase();
+        const manufactureYear = Number(form.get('manufactureYear'));
+        const modelYear = Number(form.get('modelYear'));
+        if (data.vehicles.some(vehicle => vehicle.id !== vehicleId && vehicle.plate.toUpperCase() === plate)) { showToast('Já existe um veículo cadastrado com essa placa.'); return; }
+        if (!/^(?:\d{9}|\d{11})$/.test(renavam)) { showToast('O RENAVAM deve conter 9 ou 11 dígitos.'); return; }
+        if (!/^[A-HJ-NPR-Z0-9]{17}$/.test(chassis)) { showToast('O chassi deve conter 17 letras ou números válidos.'); return; }
+        if (manufactureYear < 1950 || modelYear < manufactureYear || modelYear > new Date().getFullYear() + 1) { showToast('Confira os anos de fabricação e do modelo.'); return; }
+        const nextDate = String(form.get('nextDate'));
+        const nextKm = String(form.get('nextKm'));
+        if (!nextDate && !nextKm) { showToast('Informe a data ou a quilometragem da próxima revisão.'); return; }
+        const vehicle = { ...existingVehicle, id: existingVehicle?.id || `v${Date.now()}`, fleetNumber, plate, make, model, renavam, chassis, manufactureYear, modelYear, unit: String(form.get('unit')).trim(), km: existingVehicle?.km ?? Number(form.get('km')), nextDate, nextKm: nextKm ? Number(nextKm) : null, licenseDueDate: String(form.get('licenseDueDate')) || null, insurancePolicy: String(form.get('insurancePolicy')).trim(), insurer: String(form.get('insurer')).trim(), insuranceContractDate: String(form.get('insuranceContractDate')) || null, insuranceDueDate: String(form.get('insuranceDueDate')) || null, kmUpdatedAt: existingVehicle?.kmUpdatedAt || isoToday, kmSource: existingVehicle?.kmSource || 'manual' };
+        if (existingVehicle) {
+          data.vehicles = data.vehicles.map(item => item.id === vehicle.id ? vehicle : item);
+        } else {
+          data.vehicles.push(vehicle);
+          data.odometerReadings.push({ id: `km${Date.now()}`, vehicleId: vehicle.id, km: vehicle.km, readingDate: isoToday, responsible: 'Cadastro inicial', recordedAt: new Date().toISOString(), source: 'manual' });
+        }
+        const saved = await saveData();
+        if (!saved) {
+          if (existingVehicle) {
+            data.vehicles = data.vehicles.map(item => item.id === existingVehicle.id ? existingVehicle : item);
+          } else {
+            data.vehicles = data.vehicles.filter(item => item.id !== vehicle.id);
+            data.odometerReadings = data.odometerReadings.filter(reading => reading.vehicleId !== vehicle.id);
+          }
+          render();
+          return;
+        }
+        render();
+        formElement.reset();
+        formElement.elements.km.disabled = false;
+        document.getElementById('vehicle-dialog').close();
+        showToast(existingVehicle ? 'Dados do veículo atualizados.' : 'Veículo cadastrado.');
+      });
+
+      document.getElementById('licensing-form').addEventListener('submit', event => {
+        event.preventDefault();
+        const form = new FormData(event.currentTarget);
+        const vehicle = vehicleById(String(form.get('vehicleId')));
+        const dueDate = String(form.get('licenseDueDate'));
+        if (!vehicle) { showToast('Selecione um veículo válido.'); return; }
+        if (!dueDate) { showToast('Informe a data de vencimento do licenciamento.'); return; }
+        vehicle.licenseDueDate = dueDate;
+        saveData();
+        render();
+        event.currentTarget.reset();
+        document.getElementById('licensing-dialog').close();
+        showToast(`Licenciamento de ${vehicle.plate} atualizado.`);
+      });
+
+      document.getElementById('insurance-form').addEventListener('submit', event => {
+        event.preventDefault();
+        const form = new FormData(event.currentTarget);
+        const vehicle = vehicleById(String(form.get('vehicleId')));
+        const insurancePolicy = String(form.get('insurancePolicy')).trim();
+        const insurer = String(form.get('insurer')).trim();
+        const insuranceContractDate = String(form.get('insuranceContractDate'));
+        const insuranceDueDate = String(form.get('insuranceDueDate'));
+        if (!vehicle) { showToast('Selecione um veículo válido.'); return; }
+        if (!insurancePolicy || !insurer || !insuranceContractDate || !insuranceDueDate) { showToast('Preencha todos os dados da apólice.'); return; }
+        if (insuranceDueDate < insuranceContractDate) { showToast('O vencimento deve ser posterior à data de contratação.'); return; }
+        vehicle.insurancePolicy = insurancePolicy;
+        vehicle.insurer = insurer;
+        vehicle.insuranceContractDate = insuranceContractDate;
+        vehicle.insuranceDueDate = insuranceDueDate;
+        saveData();
+        render();
+        event.currentTarget.reset();
+        document.getElementById('insurance-dialog').close();
+        showToast(`Seguro de ${vehicle.plate} atualizado.`);
+      });
+
+      document.getElementById('incident-form').addEventListener('submit', event => {
+        event.preventDefault();
+        const form = new FormData(event.currentTarget);
+        const vehicle = vehicleById(String(form.get('vehicleId')));
+        const date = String(form.get('date'));
+        const type = String(form.get('type')).trim();
+        const severity = String(form.get('severity'));
+        const status = String(form.get('status'));
+        const title = String(form.get('title')).trim();
+        const description = String(form.get('description')).trim();
+        const responsible = String(form.get('responsible')).trim();
+        const cost = Number(form.get('cost') || 0);
+        if (!vehicle) { showToast('Selecione um veículo válido.'); return; }
+        if (!date || !title || !description || !responsible) { showToast('Preencha todos os campos do sinistro.'); return; }
+        data.incidents = data.incidents || [];
+        data.incidents.push({
+          id: `i${Date.now()}`,
+          vehicleId: vehicle.id,
+          date,
+          type,
+          severity,
+          status,
+          title,
+          description,
+          responsible,
+          cost: Number.isFinite(cost) ? cost : 0,
+          createdAt: new Date().toISOString()
+        });
+        saveData();
+        render();
+        event.currentTarget.reset();
+        document.getElementById('incident-dialog').close();
+        showToast(`Sinistro de ${vehicle.plate} registrado.`);
+      });
+
+      document.getElementById('odometer-form').addEventListener('submit', event => {
+        event.preventDefault();
+        const form = new FormData(event.currentTarget);
+        const vehicle = vehicleById(String(form.get('vehicleId')));
+        const km = Number(form.get('km'));
+        const readingDate = String(form.get('readingDate'));
+        const responsible = String(form.get('responsible')).trim();
+        if (!vehicle) { showToast('Selecione um veículo válido.'); return; }
+        if (!Number.isFinite(km) || km < Number(vehicle.km)) { showToast('A nova leitura não pode ser menor que a quilometragem atual.'); return; }
+        if (!readingDate || readingDate > isoToday) { showToast('Informe uma data válida, que não seja futura.'); return; }
+        const latestReadingDate = data.odometerReadings.filter(reading => reading.vehicleId === vehicle.id).sort((a, b) => Date.parse(b.recordedAt) - Date.parse(a.recordedAt))[0]?.readingDate || vehicle.kmUpdatedAt;
+        if (latestReadingDate && readingDate < latestReadingDate) { showToast('A data da leitura não pode ser anterior à última atualização.'); return; }
+        if (!responsible) { showToast('Informe quem conferiu o odômetro.'); return; }
+        const recordedAt = new Date().toISOString();
+        data.odometerReadings.push({ id: `km${Date.now()}`, vehicleId: vehicle.id, km, readingDate, responsible, recordedAt, source: 'manual' });
+        vehicle.km = km;
+        vehicle.kmUpdatedAt = readingDate;
+        vehicle.kmSource = 'manual';
+        saveData();
+        render();
+        event.currentTarget.reset();
+        document.getElementById('odometer-dialog').close();
+        showToast(`Quilometragem de ${vehicle.plate} atualizada.`);
+      });
+
+      document.getElementById('movement-form').addEventListener('submit', event => {
+        event.preventDefault();
+        const form = new FormData(event.currentTarget);
+        const vehicle = vehicleById(String(form.get('vehicleId')));
+        const destination = String(form.get('destination')).trim();
+        if (!vehicle) { showToast('Selecione um veículo válido.'); return; }
+        if (data.movements.some(movement => movement.vehicleId === vehicle.id && movement.status === 'pending')) { showToast('Este veículo já tem um recebimento pendente.'); return; }
+        if (destination.toLocaleLowerCase('pt-BR') === vehicle.unit.toLocaleLowerCase('pt-BR')) { showToast('A unidade de destino deve ser diferente da origem.'); return; }
+        data.movements.push({ id: `m${Date.now()}`, vehicleId: vehicle.id, origin: vehicle.unit, destination, date: String(form.get('date')), person: String(form.get('person')).trim(), receiver: String(form.get('receiver')).trim(), reason: String(form.get('reason')).trim(), status: 'pending', createdAt: new Date().toISOString(), receivedAt: null, receivedBy: '' });
+        saveData(); render(); event.currentTarget.reset(); document.getElementById('movement-dialog').close(); showToast('Movimentação registrada. Aguardando confirmação do recebedor.');
+      });
+
+      document.getElementById('maintenance-form').addEventListener('submit', event => {
+        event.preventDefault();
+        const form = new FormData(event.currentTarget);
+        const vehicle = vehicleById(String(form.get('vehicleId')));
+        const nextDate = String(form.get('nextDate'));
+        const nextKm = String(form.get('nextKm'));
+        if (!vehicle) { showToast('Selecione um veículo válido.'); return; }
+        if (!nextDate && !nextKm) { showToast('Informe a data ou a quilometragem da próxima revisão.'); return; }
+        vehicle.nextDate = nextDate;
+        vehicle.nextKm = nextKm ? Number(nextKm) : null;
+        saveData(); render(); document.getElementById('maintenance-dialog').close(); showToast('Próxima revisão atualizada.');
+      });
+
+      document.getElementById('today').textContent = new Intl.DateTimeFormat('pt-BR', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }).format(today);
+      initializeSession();
+      setInterval(() => {
+        if (currentUser && data) { renderMetrics(); renderMovements(); renderPendingReceipts(); renderLicensingAlerts(); renderInsuranceAlerts(); }
+      }, 60000);
+    })();
+  </script>
+</body>
+</html>

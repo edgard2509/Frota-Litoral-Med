@@ -1,0 +1,5 @@
+# Substitua pelo seu domínio para habilitar HTTPS automático (ex.: frota.exemplo.com.br).
+# Sem domínio, use ":80" (HTTP, sem criptografia).
+:80 {
+	reverse_proxy 127.0.0.1:8000
+}

@@ -1,0 +1,21 @@
+[Unit]
+Description=Frota Litoral Med
+After=network.target
+
+[Service]
+Type=simple
+User=frota
+WorkingDirectory=/opt/frota-litoral-med
+Environment=NODE_ENV=production
+Environment=PORT=8000
+Environment=DATA_DIR=/var/lib/frota-litoral-med
+ExecStart=/usr/bin/node server.js
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ReadWritePaths=/var/lib/frota-litoral-med
+
+[Install]
+WantedBy=multi-user.target

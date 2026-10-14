@@ -1,0 +1,11 @@
+{
+  "forwardPorts": [8000],
+  "portsAttributes": {
+    "8000": {
+      "label": "Frota Litoral Med",
+      "onAutoForward": "openBrowser",
+      "visibility": "public"
+    }
+  },
+  "postStartCommand": "npm start > /tmp/frota-litoral-med.log 2>&1 &"
+}

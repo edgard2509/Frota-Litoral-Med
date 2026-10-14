@@ -1,0 +1,12 @@
+{
+  "name": "frota-litoral-med",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Gestão compartilhada da frota Litoral Med",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=22.13"
+  }
+}
