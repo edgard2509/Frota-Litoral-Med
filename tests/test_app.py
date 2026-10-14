@@ -27,6 +27,8 @@ class DashboardTests(unittest.TestCase):
         self.assertIn('id="user-count">5 usuários', page)
         self.assertIn('id="visible-user-count">5</strong>', page)
         self.assertNotIn("12 usuários", page)
+        self.assertIn("anos", page)
+        self.assertIn('class="sidebar"', page)
 
     def test_dashboard_assets_are_served_locally(self):
         for asset in ("styles.css", "app.js"):
