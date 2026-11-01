@@ -1,3 +1,93 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Frota Litoral Med — Gestão de Frota</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  {% macro kpi_card(valor, rotulo) %}
+  <div class="card kpi"><strong>{{ valor }}</strong><span>{{ rotulo }}</span></div>
+  {% endmacro %}
+  {% macro badge(texto) %}
+  <span class="badge {{ 'ok' if texto in ('Em operação','Disponível') else 'warn' }}">{{ texto }}</span>
+  {% endmacro %}
+
+  <header class="topbar">
+    <a class="brand" href="#inicio" aria-label="Litoral Med 20 anos">
+      <span class="brand-mark">LM</span>
+      <span class="brand-text"><b>Litoral Med</b><small>Frota</small></span>
+      <span class="anos"><b>20</b> anos</span>
+    </a>
+    <nav>
+      <a href="#veiculos">Veículos</a>
+      <a href="#movimentacoes">Movimentações</a>
+      <a href="#manutencoes">Manutenções</a>
+      <a href="#indicadores">Indicadores</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="inicio">
+      <p class="eyebrow">Litoral Med · 20 anos cuidando de pessoas</p>
+      <h1>Gestão de frota com a confiança de duas décadas</h1>
+      <p>Controle veículos, movimentações e manutenções em um só lugar.</p>
+      <a class="btn" href="#veiculos">Ver frota</a>
+    </section>
+
+    <section class="kpis" aria-label="Resumo">
+      {{ kpi_card(kpi.total, 'Veículos na frota') }}
+      {{ kpi_card(kpi.em_operacao, 'Em operação') }}
+      {{ kpi_card(kpi.em_manutencao, 'Em manutenção') }}
+      {{ kpi_card(kpi.km_total ~ ' km', 'Rodados hoje e ontem') }}
+    </section>
+
+    <section id="veiculos">
+      <h2>Veículos</h2>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Placa</th><th>Modelo</th><th>Tipo</th><th>Status</th><th>Km</th></tr></thead>
+        <tbody>{% for v in veiculos %}
+          <tr><td>{{ v.placa }}</td><td>{{ v.modelo }}</td><td>{{ v.tipo }}</td><td>{{ badge(v.status) }}</td><td>{{ v.km }}</td></tr>
+        {% endfor %}</tbody>
+      </table></div>
+    </section>
+
+    <section id="movimentacoes">
+      <h2>Movimentações</h2>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Data</th><th>Placa</th><th>Motorista</th><th>Destino</th><th>Km</th></tr></thead>
+        <tbody>{% for m in movimentacoes %}
+          <tr><td>{{ m.data }}</td><td>{{ m.placa }}</td><td>{{ m.motorista }}</td><td>{{ m.destino }}</td><td>{{ m.km }}</td></tr>
+        {% endfor %}</tbody>
+      </table></div>
+    </section>
+
+    <section id="manutencoes">
+      <h2>Manutenções</h2>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Placa</th><th>Serviço</th><th>Previsão</th><th>Status</th></tr></thead>
+        <tbody>{% for m in manutencoes %}
+          <tr><td>{{ m.placa }}</td><td>{{ m.servico }}</td><td>{{ m.previsao }}</td><td>{{ badge(m.status) }}</td></tr>
+        {% endfor %}</tbody>
+      </table></div>
+    </section>
+
+    <section id="indicadores">
+      <h2>Indicadores</h2>
+      <div class="kpis">
+        {{ kpi_card(kpi.disponibilidade ~ '%', 'Disponibilidade da frota') }}
+        {{ kpi_card(kpi.movimentacoes, 'Movimentações recentes') }}
+        {{ kpi_card(manutencoes|length, 'Manutenções previstas') }}
+      </div>
+      <div class="card bar" role="img" aria-label="Disponibilidade {{ kpi.disponibilidade }}%">
+        <div class="bar-fill" style="width: {{ kpi.disponibilidade }}%"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>© Litoral Med — 20 anos · Sistema de gestão de frota</footer>
+</body>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>

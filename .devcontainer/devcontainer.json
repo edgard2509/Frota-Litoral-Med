@@ -5,7 +5,7 @@
   "postAttachCommand": "python app.py",
   "forwardPorts": [8000],
   "portsAttributes": {
-    "8000": { "label": "Frota Litoral Med", "onAutoForward": "openBrowser", "visibility": "public" }
+    "8000": { "label": "Frota Litoral Med", "onAutoForward": "openBrowser" }
   }
   "portsAttributes": {"8000": {"label": "Frota Litoral Med", "onAutoForward": "openBrowser"}}
 }
