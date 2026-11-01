@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#153a8a">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo-litoral-med.png') }}">
+    <title>Esqueci minha senha | Frota Litoral Med</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  </head>
+  <body class="auth-page">
+    <main class="auth-card">
+      <a class="auth-brand" href="/" aria-label="Litoral Med"><img src="{{ url_for('static', filename='logo-litoral-med.png') }}" alt="Litoral Med - 20 anos"></a>
+      <h1>Esqueci minha senha</h1>
+      <p>Informe o e-mail do seu acesso. O administrador receberá o pedido e lhe passará uma senha temporária, que você trocará no próximo login.</p>
+      <form method="post" class="auth-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label for="email">E-mail</label>
+        <input id="email" name="email" type="email" autocomplete="username" required>
+        <button class="primary-button auth-submit" type="submit">Solicitar nova senha</button>
+      </form>
+      <p class="auth-link"><a href="{{ url_for('login') }}">← Voltar ao login</a></p>
+    </main>
+  </body>
+</html>

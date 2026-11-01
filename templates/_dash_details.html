@@ -1,0 +1,56 @@
+          <section class="dashboard-details" id="dashboard-details">
+            {% if summary.km_alerts or summary.seguro_alerts %}
+              <article class="panel km-panel" style="grid-column: 1 / -1">
+                {% if summary.km_alerts %}
+                  <div class="detail-heading">
+                    <div><div class="section-kicker">REVISÃO PREVENTIVA</div><h2>Alertas de quilometragem</h2></div>
+                    <span class="deadline-count">{{ '%02d'|format(summary.km_alerts|length) }}</span>
+                  </div>
+                  {% for a in summary.km_alerts %}
+                    <p class="notice km-{{ a.level }}"><strong>{{ a.placa }}</strong> — {{ a.text }}</p>
+                  {% endfor %}
+                {% endif %}
+                {% if summary.seguro_alerts %}
+                  <div class="detail-heading">
+                    <div><div class="section-kicker">SEGUROS</div><h2>Renovações de seguro</h2></div>
+                    <span class="deadline-count">{{ '%02d'|format(summary.seguro_alerts|length) }}</span>
+                  </div>
+                  {% for a in summary.seguro_alerts %}
+                    <p class="notice km-{{ a.level }}"><strong>{{ a.placa }}</strong> — {{ a.text }}</p>
+                  {% endfor %}
+                {% endif %}
+              </article>
+            {% endif %}
+            <article class="panel activity-panel">
+              <div class="detail-heading">
+                <div><div class="section-kicker">ACOMPANHAMENTO</div><h2>Movimentações recentes</h2></div>
+                <a href="{{ url_for('module_list', key='movimentacoes') }}">Ver movimentações <span aria-hidden="true">↗</span></a>
+              </div>
+              <div class="activity-list">
+                {% for m in summary.movements %}
+                  <div class="activity-item">
+                    <span class="activity-mark activity-mark-blue"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h13m0 0-3-3m3 3-3 3M20 17H7m0 0 3-3m-3 3 3 3"/></svg></span>
+                    <span class="activity-copy"><strong>{{ m.motorista }}</strong><small>{{ m.origem }} → {{ m.destino }}</small></span>
+                    <span class="activity-vehicle">{% if m.frota %}Frota {{ m.frota }} · {% endif %}{{ m.placa }} <small>{{ m.data|fmtvalue('datetime') }}</small></span>
+                  </div>
+                {% else %}
+                  <div class="empty-state">Nenhuma movimentação registrada ainda.</div>
+                {% endfor %}
+              </div>
+            </article>
+            <article class="panel deadlines-panel">
+              <div class="detail-heading">
+                <div><div class="section-kicker">PRÓXIMOS PRAZOS</div><h2>Itens para acompanhar</h2></div>
+                <span class="deadline-count">{{ '%02d'|format(summary.deadlines|length) }}</span>
+              </div>
+              {% for item in summary.deadlines %}
+                <div class="deadline-item">
+                  <span class="deadline-date {{ 'date-amber' if item.tone == 'red' else 'date-blue' }}"><strong>{{ item.day }}</strong><small>{{ item.month }}</small></span>
+                  <span><strong>{{ item.label }}</strong><small>{{ item.placa }} · {{ item.when }}</small></span>
+                  <span class="deadline-arrow">›</span>
+                </div>
+              {% else %}
+                <div class="empty-state">Nenhum prazo cadastrado.</div>
+              {% endfor %}
+            </article>
+          </section>

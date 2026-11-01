@@ -1,0 +1,147 @@
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#102c4a">
+    <meta name="description" content="Portal interno de gestão da frota Litoral Med.">
+    <title>Frota Litoral Med | Gestão de frota</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo-litoral-med.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      {% set dashboard = true %}{% include "_sidebar.html" %}
+
+      <main class="main-panel">
+        <header class="topbar">
+          <button class="mobile-menu" id="mobile-menu" type="button" aria-label="Abrir menu" aria-expanded="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+          </button>
+          <div class="breadcrumbs"><span>Início</span><span class="crumb-separator">/</span><strong id="breadcrumb-current">Usuários</strong></div>
+          <div class="topbar-actions">
+            <span class="today-label"><span class="online-indicator"></span> Sistema operacional</span>
+            <span class="topbar-avatar" title="{{ current_user.email }}">{{ current_user.name[:2]|upper }}</span>
+          </div>
+        </header>
+
+        <div class="content">
+          {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              <div class="dashboard-messages" role="status">
+                {% for category, message in messages %}
+                  <p class="notice notice-{{ category }}">{{ message }}</p>
+                {% endfor %}
+              </div>
+            {% endif %}
+          {% endwith %}
+          <section class="page-heading">
+            <div>
+              <h1 id="page-title">Usuários</h1>
+              <p id="page-description">Gerencie os acessos e as permissões do sistema.</p>
+            </div>
+            <button class="date-selector" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M7.5 3v4m9-4v4m-13 3h17"/></svg>
+              <span>{{ summary.today }}</span>
+              <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>
+            </button>
+          </section>
+
+          {% include "_dash_stats.html" %}
+
+          <section class="panel users-panel" id="users-panel">
+            <div class="panel-heading">
+              <div>
+                <div class="section-kicker">ADMINISTRAÇÃO</div>
+                <h2>Acessos autorizados</h2>
+                <p>Contas cadastradas para acessar o sistema.</p>
+              </div>
+              {% if current_user.is_admin %}
+                <button class="primary-button" type="button" id="add-user">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14m-7-7h14"/></svg>
+                  Novo usuário
+                </button>
+              {% endif %}
+            </div>
+            <div class="table-toolbar">
+              <div class="result-count"><strong id="user-count">5 usuários</strong><span> · Lista de acessos</span></div>
+              <label class="search-box">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.5 4.5"/></svg>
+                <input type="search" id="user-search" placeholder="Buscar usuário..." aria-label="Buscar usuário">
+                <kbd>⌘ K</kbd>
+              </label>
+              <button class="filter-button" type="button" id="filter-button" aria-pressed="false">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M7 12h10m-7 5h4"/></svg>
+                Filtrar
+              </button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>USUÁRIO</th><th>PERFIL DE ACESSO</th><th>ÚLTIMO ACESSO</th><th>STATUS</th><th><span class="sr-only">Ações</span></th></tr>
+                </thead>
+                <tbody id="user-rows">
+                  {% for user in users %}
+                    <tr data-search="{{ user.name|lower }} {{ user.email|lower }} {{ user.role|lower }}">
+                      <td><div class="user-cell"><span class="avatar avatar-navy">{{ user.name[:2]|upper }}</span><span><strong>{{ user.name }}</strong><small>{{ user.email }}</small></span></div></td>
+                      <td><span class="role-badge {{ 'role-admin' if user.is_admin else 'role-manager' }}">{{ user.role }}</span></td>
+                      <td><span class="last-seen">{{ user.last_seen or "Nunca acessou" }}</span></td>
+                      <td><span class="status-badge"><i></i> Ativo</span></td>
+                      <td class="row-actions">
+                        {% if user.reset_requested and current_user.is_admin %}<span class="km-badge km-soon">Pediu nova senha</span>{% endif %}
+                        {% if current_user.is_admin and user.id != current_user.id %}
+                          <form method="post" action="{{ url_for('reset_user_password', user_id=user.id) }}" data-confirm="Gerar uma senha temporária para {{ user.name }}?">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button class="filter-button" type="submit">Redefinir senha</button>
+                          </form>
+                        {% endif %}
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+              <div class="empty-state" id="empty-state" hidden>Nenhum usuário encontrado para esta busca.</div>
+            </div>
+            <div class="table-footer">
+              <span aria-live="polite">Exibindo <strong id="visible-user-count">{{ users|length }}</strong> de <strong id="total-user-count">{{ users|length }}</strong> usuários cadastrados</span>
+            </div>
+          </section>
+          {% if current_user.is_admin %}
+            <dialog class="user-dialog" id="new-user-dialog" aria-labelledby="new-user-title">
+              <form method="post" action="{{ url_for('create_user') }}" class="user-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="dialog-heading">
+                  <div><div class="section-kicker">ADMINISTRAÇÃO</div><h2 id="new-user-title">Criar acesso</h2></div>
+                  <button class="dialog-close" type="button" id="close-user-dialog" aria-label="Fechar">×</button>
+                </div>
+                <label for="new-user-name">Nome completo</label>
+                <input id="new-user-name" name="name" autocomplete="name" required minlength="2">
+                <label for="new-user-email">E-mail</label>
+                <input id="new-user-email" name="email" type="email" autocomplete="email" required>
+                <label for="new-user-role">Perfil</label>
+                <select id="new-user-role" name="role" required>
+                  <option value="Gestor de frota">Gestor de frota</option>
+                  <option value="Operador">Operador</option>
+                  <option value="Somente leitura">Somente leitura</option>
+                </select>
+                <label for="new-user-password">Senha inicial (6 a 8 caracteres)</label>
+                <input id="new-user-password" name="password" type="password" autocomplete="new-password" minlength="6" maxlength="8" required>
+                <div class="dialog-actions">
+                  <button class="filter-button" type="button" id="cancel-user-dialog">Cancelar</button>
+                  <button class="primary-button" type="submit">Criar acesso</button>
+                </div>
+              </form>
+            </dialog>
+          {% endif %}
+
+          {% include "_dash_details.html" %}
+
+          <footer class="page-footer">
+            <span>© 2026 Litoral Med <span class="footer-separator">·</span> Gestão de frota</span>
+            <span><span class="footer-live"></span> Ambiente interno</span>
+          </footer>
+        </div>
+      </main>
+      <div class="sidebar-scrim" id="sidebar-scrim"></div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,22 @@
+          <section class="stats-grid" aria-label="Resumo da frota">
+            <article class="stat-card">
+              <div class="stat-top"><span class="stat-label">Veículos na frota</span><span class="stat-icon icon-blue"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 11 1.6-4.3A2.5 2.5 0 0 1 8 5h8a2.5 2.5 0 0 1 2.4 1.7L20 11"/><path d="M3.5 11h17v7a1.5 1.5 0 0 1-1.5 1.5h-14A1.5 1.5 0 0 1 3.5 18z"/><path d="M7 15h.01M17 15h.01"/></svg></span></div>
+              <div class="stat-value">{{ summary.total }}</div>
+              <div class="stat-foot">Veículos cadastrados</div>
+            </article>
+            <article class="stat-card">
+              <div class="stat-top"><span class="stat-label">Em operação</span><span class="stat-icon icon-green"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7 10 17l-5-5"/><circle cx="12" cy="12" r="9"/></svg></span></div>
+              <div class="stat-value">{{ summary.em_operacao }} <span class="stat-percent">{{ summary.percent_operacao }}%</span></div>
+              <div class="stat-foot">{{ summary.disponiveis }} disponível(is) para uso</div>
+            </article>
+            <article class="stat-card">
+              <div class="stat-top"><span class="stat-label">Em manutenção</span><span class="stat-icon icon-amber"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.2 6.2 3.6 3.6m-8.9 8.9-4.6 1.1 1.1-4.6L16.5 4.1a2.5 2.5 0 0 1 3.5 3.5z"/></svg></span></div>
+              <div class="stat-value">{{ summary.em_manutencao }} <span class="stat-trend stat-trend-warm">{{ summary.preventivas }} preventiva(s)</span></div>
+              <div class="stat-foot">{{ summary.manutencoes_abertas }} manutenção(ões) em aberto</div>
+            </article>
+            <article class="stat-card">
+              <div class="stat-top"><span class="stat-label">Alertas importantes</span><span class="stat-icon icon-red"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2.8 19a1.4 1.4 0 0 0 1.2 2h16a1.4 1.4 0 0 0 1.2-2L12 3Z"/><path d="M12 9v4m0 3h.01"/></svg></span></div>
+              <div class="stat-value">{{ summary.alertas }}{% if summary.alertas %} <span class="stat-trend stat-trend-alert">Requer atenção</span>{% endif %}</div>
+              <div class="stat-foot">Prazos vencidos ou nos próximos 30 dias</div>
+            </article>
+          </section>

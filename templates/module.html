@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#153a8a">
+    <title>{{ module.title }} | Frota Litoral Med</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo-litoral-med.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="{{ url_for('static', filename='module.js') }}" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      {% set dashboard = false %}{% set active = key %}{% include "_sidebar.html" %}
+
+      <main class="main-panel">
+        <header class="topbar">
+          <button class="mobile-menu" id="mobile-menu" type="button" aria-label="Abrir menu" aria-expanded="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+          </button>
+          <div class="breadcrumbs"><span>Início</span><span class="crumb-separator">/</span><strong>{{ module.title }}</strong></div>
+          <div class="topbar-actions">
+            <span class="today-label"><span class="online-indicator"></span> Sistema operacional</span>
+            <span class="topbar-avatar" title="{{ current_user.email }}">{{ current_user.name[:2]|upper }}</span>
+          </div>
+        </header>
+
+        <div class="content">
+          {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              <div class="dashboard-messages" role="status">
+                {% for category, message in messages %}
+                  <p class="notice notice-{{ category }}">{{ message }}</p>
+                {% endfor %}
+              </div>
+            {% endif %}
+          {% endwith %}
+          <section class="page-heading">
+            <div>
+              <h1>{{ module.title }}</h1>
+              <p>{{ module.description }}</p>
+            </div>
+          </section>
+
+          {% if alerts %}
+            <section class="km-alerts" role="alert">
+              {% for a in alerts %}
+                <p class="notice km-{{ a.level }}"><strong>{{ a.placa }}</strong> — {{ a.text }}</p>
+              {% endfor %}
+            </section>
+          {% endif %}
+
+          <section class="panel users-panel">
+            <div class="panel-heading">
+              <div>
+                <div class="section-kicker">CADASTRO</div>
+                <h2>{{ module.title }} cadastrados</h2>
+                {% if not can_edit %}<p>Seu perfil permite apenas consultar.</p>{% endif %}
+              </div>
+              {% if can_edit %}
+                <button class="primary-button" type="button" id="add-record">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14m-7-7h14"/></svg>
+                  Novo {{ module.singular }}
+                </button>
+              {% endif %}
+            </div>
+            <div class="table-toolbar">
+              <div class="result-count"><strong id="record-count">{{ records|length }}</strong><span> registro(s)</span></div>
+              <label class="search-box">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.5 4.5"/></svg>
+                <input type="search" id="record-search" placeholder="Buscar...">
+              </label>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    {% for field in module.fields %}<th>{{ field.label|upper }}</th>{% endfor %}
+                    <th><span class="sr-only">Ações</span></th>
+                  </tr>
+                </thead>
+                <tbody id="record-rows">
+                  {% for rec in records %}
+                    <tr data-record='{{ rec.data|tojson }}' data-id="{{ rec.id }}">
+                      {% for field in module.fields %}
+                        <td>{% if field.type == 'placa' %}{% if fleet.get(rec.data.get(field.name)) %}<strong>Frota {{ fleet[rec.data.get(field.name)] }}</strong> · {% endif %}{% endif %}{{ rec.data.get(field.name)|fmtvalue(field.type) }}{% if rec.alert and field.name in ('km_revisao', 'vigencia') %} <span class="km-badge km-{{ rec.alert.level }}">{{ 'Vencido' if key == 'seguros' and rec.alert.level == 'over' else 'Renovar' if key == 'seguros' else 'Ultrapassada' if rec.alert.level == 'over' else 'Revisão próxima' }}</span>{% endif %}</td>
+                      {% endfor %}
+                      <td class="row-actions">
+                        {% if can_edit %}<button class="filter-button" type="button" data-edit>Editar</button>{% endif %}
+                        {% if can_delete %}
+                          <form method="post" action="{{ url_for('module_delete', key=key, record_id=rec.id) }}" data-confirm="Excluir este registro?">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button class="filter-button danger-button" type="submit">Excluir</button>
+                          </form>
+                        {% endif %}
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+              <div class="empty-state" id="empty-state" {% if records %}hidden{% endif %}>Nenhum registro cadastrado ainda.</div>
+            </div>
+          </section>
+
+          {% if can_edit %}
+            <dialog class="user-dialog" id="record-dialog" aria-labelledby="record-title"
+                    data-create-action="{{ url_for('module_create', key=key) }}"
+                    data-update-action="{{ url_for('module_update', key=key, record_id=0) }}"
+                    data-singular="{{ module.singular }}">
+              <form method="post" class="user-form" id="record-form" action="{{ url_for('module_create', key=key) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="dialog-heading">
+                  <div><div class="section-kicker">CADASTRO</div><h2 id="record-title">Novo {{ module.singular }}</h2></div>
+                  <button class="dialog-close" type="button" id="close-record-dialog" aria-label="Fechar">×</button>
+                </div>
+                {% for field in module.fields %}
+                  <label for="f-{{ field.name }}">{{ field.label }}</label>
+                  {% if field.type == 'select' %}
+                    <select id="f-{{ field.name }}" name="{{ field.name }}" {% if field.required %}required{% endif %}>
+                      {% for option in field.options %}<option value="{{ option }}">{{ option }}</option>{% endfor %}
+                    </select>
+                  {% elif field.type == 'placa' %}
+                    <select id="f-{{ field.name }}" name="{{ field.name }}" required>
+                      <option value="">Selecione...</option>
+                      {% for plate in plates %}<option value="{{ plate }}">{% if fleet.get(plate) %}Frota {{ fleet[plate] }} · {% endif %}{{ plate }}</option>{% endfor %}
+                    </select>
+                  {% else %}
+                    <input id="f-{{ field.name }}" name="{{ field.name }}" maxlength="200" {% if field.required %}required{% endif %}
+                      {% if field.type == 'int' %}type="number" step="1"{% elif field.type == 'money' %}type="number" step="0.01"{% elif field.type == 'date' %}type="date"{% elif field.type == 'datetime' %}type="datetime-local"{% else %}type="text"{% endif %}
+                      {% if field.min is defined %}min="{{ field.min }}"{% endif %}{% if field.max is defined %} max="{{ field.max }}"{% endif %}>
+                  {% endif %}
+                {% endfor %}
+                <div class="dialog-actions">
+                  <button class="filter-button" type="button" id="cancel-record-dialog">Cancelar</button>
+                  <button class="primary-button" type="submit">Salvar</button>
+                </div>
+              </form>
+            </dialog>
+          {% endif %}
+
+          <footer class="page-footer">
+            <span>© 2026 Litoral Med <span class="footer-separator">·</span> Gestão de frota</span>
+            <span><span class="footer-live"></span> Ambiente interno</span>
+          </footer>
+        </div>
+      </main>
+      <div class="sidebar-scrim" id="sidebar-scrim"></div>
+    </div>
+  </body>
+</html>
