@@ -1,33 +1,11 @@
+import os
+
 from flask import Flask, jsonify, render_template
 
 import data
-from flask import Flask, render_template
 
 app = Flask(__name__)
 
-
-@app.template_filter("brl")
-def brl(value):
-    return "R$ " + f"{value:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-
-
-@app.template_filter("num")
-def num(value):
-    return f"{value:,}".replace(",", ".")
-
-
-@app.route("/")
-def home():
-    return render_template(
-        "index.html",
-        kpis=data.kpis(),
-        veiculos=data.VEICULOS,
-        movimentacoes=data.MOVIMENTACOES,
-        manutencoes=data.MANUTENCOES,
-    )
-@app.route("/")
-def home():
-    return render_template("index.html")
 MENU = [
     ("visao-geral", "Visão geral"),
     ("veiculos", "Veículos"),
@@ -47,27 +25,28 @@ USUARIOS = [
 ]
 
 
-@app.route("/")
-def index():
-    return render_template("index.html", menu=MENU, ativo="usuarios", usuarios=USUARIOS)
+@app.template_filter("brl")
+def brl(value):
+    return "R$ " + f"{value:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
 
-@app.route("/health")
-def health():
-    return jsonify(status="ok")
-    return {"status": "ok"}
-
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8000)
-from flask import Flask, jsonify, render_template
-
-app = Flask(__name__)
+@app.template_filter("num")
+def num(value):
+    return f"{value:,}".replace(",", ".")
 
 
 @app.get("/")
-def index():
-    return render_template("index.html")
+def home():
+    return render_template(
+        "index.html",
+        kpis=data.kpis(),
+        veiculos=data.VEICULOS,
+        movimentacoes=data.MOVIMENTACOES,
+        manutencoes=data.MANUTENCOES,
+        menu=MENU,
+        ativo="usuarios",
+        usuarios=USUARIOS,
+    )
 
 
 @app.get("/health")
@@ -75,5 +54,9 @@ def health():
     return jsonify(status="ok")
 
 
+def run():
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", "8000")), debug=False)
+
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8000, debug=False)
+    run()

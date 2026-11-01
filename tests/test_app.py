@@ -1,8 +1,9 @@
 import os
 import sys
+from unittest.mock import patch
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
-from app import app
+from app import app, run
 
 
 def test_home_has_sections():
@@ -40,10 +41,29 @@ class DashboardTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get_json(), {"status": "ok"})
 
+    def test_only_one_home_and_health_route(self):
+        routes = [rule.rule for rule in app.url_map.iter_rules()]
+        self.assertEqual(routes.count("/"), 1)
+        self.assertEqual(routes.count("/health"), 1)
+
+    def test_run_uses_platform_port_or_local_default(self):
+        with patch.object(app, "run") as app_run, patch.dict(os.environ, {"PORT": "4321"}):
+            run()
+        app_run.assert_called_once_with(host="0.0.0.0", port=4321, debug=False)
+
+        with patch.object(app, "run") as app_run, patch.dict(os.environ, {}, clear=True):
+            run()
+        app_run.assert_called_once_with(host="0.0.0.0", port=8000, debug=False)
+
     def test_home_serves_portuguese_dashboard(self):
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
         page = response.get_data(as_text=True)
+        self.assertEqual(page.count("<html"), 1)
+        self.assertEqual(page.count("<head>"), 1)
+        self.assertEqual(page.count("<body>"), 1)
+        self.assertIn('<div class="app-shell">', page)
+        self.assertNotIn("<title>Litoral Med · Gestão de Frota</title>", page)
         self.assertIn('lang="pt-BR"', page)
         self.assertIn('class="brand-name">Litoral <span>Med</span>', page)
         self.assertIn('<strong>20</strong> anos', page)

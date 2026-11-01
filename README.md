@@ -1,28 +1,6 @@
-# Frota-Litoral-Med
-Sistema de gestão de frota da Litoral Med — controle de movimentações e manutenções.
-
-## Como executar (Codespaces ou local)
-## Executando (Codespaces / local)
-
-```bash
-pip install -r requirements.txt
-python app.py
-```
-
-O app escuta em `0.0.0.0:8000`. No Codespaces, abra a porta 8000 na aba **Portas** (o `.devcontainer` já a encaminha e inicia o app automaticamente).
-O portal escuta em `0.0.0.0:8000`. Rotas: `/` (portal) e `/health`.
-Os dados são de demonstração (`data.py`).
-## Executando
-
-```bash
-pip install -r requirements.txt
-python app.py   # http://localhost:8000
-```
-
-Endpoint de saúde: `/health`.
 # Frota Litoral Med
 
-Portal interno em português para acompanhamento da frota, movimentações, manutenção e acessos autorizados.
+Portal em português para acompanhamento da frota, movimentações, manutenções e acessos autorizados. Os dados exibidos são demonstrativos.
 
 ## Executar localmente ou no GitHub Codespaces
 
@@ -33,14 +11,17 @@ python -m pip install -r requirements.txt
 python app.py
 ```
 
-A aplicação fica disponível em `http://localhost:8000` e escuta em `0.0.0.0:8000`, permitindo o encaminhamento da porta 8000 no Codespaces.
+A aplicação fica disponível em `http://localhost:8000`. Se a variável `PORT` estiver definida, ela será usada no lugar da porta local padrão. O endpoint `GET /health` retorna `{"status":"ok"}`.
 
-O endpoint `GET /health` retorna `{"status":"ok"}` para verificações de disponibilidade.
+## Publicar no Render
 
-Para executar os testes:
+Crie um **Web Service** no Render conectado a este repositório. O `render.yaml` configura automaticamente o comando de build e o comando de inicialização com Gunicorn. Se configurar o serviço manualmente, use:
+
+- **Build Command:** `pip install -r requirements.txt`
+- **Start Command:** `gunicorn app:app --bind 0.0.0.0:$PORT`
+
+## Testes
 
 ```bash
-python -m unittest tests.test_app
+python -m unittest discover -s tests
 ```
-
-Os indicadores e perfis de usuário exibidos na interface são demonstrativos; conecte dados reais antes de utilizar o portal em produção.
